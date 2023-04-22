@@ -1,53 +1,70 @@
 import sys
-import re
+import regex as re
+# We love regex!!!
 
-if __name__ == "__main__":
-    problem_filename = sys.argv[1]
-    problem_file = open(problem_filename, "r")
-    
-    # Condense file into 1 line
-    problem_text = ""
+def parse_file(file_name):
+    problem_file = open(file_name, "r")
+        
+    # Condense file of text into 1 line to rid of newline characters
+    text = ""
     for line in problem_file:
         line = line.strip()
-        problem_text += line
+        text += line
         
-    problem_text = problem_text[1:-1]
+    text = text[1:-1]
+    
+    return {"domain": parse_domain(text), "objects": parse_objects(text), "init": parse_init(text), "goal": parse_goal(text)}
     
     
-    # DOMAIN
-    reg = re.findall(":domain.*?\\)", problem_text)
+def parse_domain(text):
+    reg = re.findall(":domain.*?\\)", text)
     domain_name = reg[0][7:-1].strip()
-    print("DOMAIN:", domain_name, "\n")
     
-    # OBJECTS
-    reg = re.findall(":objects.*?\\)", problem_text)
+    return domain_name
+
+
+def parse_objects(text):
+    reg = re.findall(":objects.*?\\)", text)
     objects = reg[0][:-1].split(" ")
     objects.pop(0)
-    print("OBJECTS:", objects, "\n")
     
-    # INIT
+    return objects
+    
+    
+def parse_init(text):
     inital_state = {}
-    reg = re.findall(":init.*?\\)\\)", problem_text)
-    inits = reg[0][5:-1].strip()
+    reg = re.findall(":init.*?\\)\\)", text)
     reg = re.findall("\\(.*?\\)", reg[0][5:-1].strip())
+    
+    # Go thorugh all predicates in init
     for predicate in reg:
         predicate = predicate[1:-1]
         values = predicate.split()
         bindings = []
+        
+        # Go through all bindings to the predicate
         for i in range(1, len(values)):
             bindings.append(values[i])
         
         predicate_name = values[0]
+        
         if predicate_name in inital_state.keys():
             inital_state[predicate_name].append(bindings)
         else:
             inital_state[predicate_name] = [bindings]
         
-    print("INNIT:", inital_state, "\n")
-        
-    # GOAL
-    reg = re.findall(":goal.*?\\)", problem_text)
+    return inital_state
+    
+    
+def parse_goal(text):    
+    reg = re.findall(":goal.*?\\)", text)
     reg = re.findall("\\(.*?\\)", reg[0])
     goal = reg[0][1:-1]
-    print("GOAL:", goal, "\n")
+    
+    return goal
+
+
+if __name__ == "__main__":
+    file_name = sys.argv[1]
+    print(parse_file(file_name))
     
