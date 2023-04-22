@@ -1,5 +1,5 @@
 (define (domain pass-the-ball)
-   (:predicates (has-first-letter ?n ?l)
+(:predicates (has-first-letter ?n ?l)
 		(has-last-letter ?n ?l)
 		(in-room ?n ?r)
 		(has-ball ?n))
