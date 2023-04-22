@@ -13,7 +13,7 @@ def parse_file(file_name):
         
     text = text[1:-1]
     
-    return {"domain": parse_domain(text), "objects": parse_objects(text), "init": parse_init(text), "goal": parse_goal(text)}
+    return { "domain": parse_domain(text), "objects": parse_objects(text), "init": parse_init(text), "goal": parse_goal(text) }
     
     
 def parse_domain(text):
@@ -25,8 +25,9 @@ def parse_domain(text):
 
 def parse_objects(text):
     reg = re.findall(":objects.*?\\)", text)
-    objects = reg[0][:-1].split(" ")
+    objects = reg[0][:-1].strip().split(" ")
     objects.pop(0)
+    print("TEST:", objects, "\n")
     
     return objects
     
@@ -54,12 +55,14 @@ def parse_init(text):
             inital_state[predicate_name] = [bindings]
         
     return inital_state
-    
+    # FORMAT: { predicate_name1: [  [?x1, ?y1],  [?x2, ?y2], …,  [?xN, ?yN]  ],
+    #           predicate_name2: [  [?x1, ?y1],  [?x2, ?y2], …,  [?xN, ?yN]  ] }
+
     
 def parse_goal(text):    
     reg = re.findall(":goal.*?\\)", text)
     reg = re.findall("\\(.*?\\)", reg[0])
-    goal = reg[0][1:-1]
+    goal = reg[0][1:-1].strip()
     
     return goal
 
