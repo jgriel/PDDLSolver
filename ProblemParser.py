@@ -27,7 +27,6 @@ def parse_objects(text):
     reg = re.findall(":objects.*?\\)", text)
     objects = reg[0][:-1].strip().split(" ")
     objects.pop(0)
-    print("TEST:", objects, "\n")
     
     return objects
     
