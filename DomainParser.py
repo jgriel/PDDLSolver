@@ -17,12 +17,45 @@ def parse_predicates(domain_text):
 
     return predicates_dict
 
+def parse_conditions(action, effect_precondition):
+    e_p = re.findall(':'+ effect_precondition + '.*?\\(.*:', action)
+    # print(effect)
+
+    e_p = re.findall('\\(.*?\\)', e_p[0])
+    # print(effect)
+    # print()
+
+    e_p_dict = {}
+    for i in range(len(e_p)):
+        single_effect = e_p[i]
+        # print(single_effect)
+
+        if (single_effect[1:].strip()[:3] == "and"):
+            single_effect = single_effect[1:].strip()[3:].strip() 
+        
+        # check if the effect has a not
+        not_present = (single_effect[1:].strip()[:3] == "not")
+        if (not_present):
+            single_effect = single_effect[4:].strip()[1:-1].strip()
+            single_effect = single_effect.split()
+            effect_name = single_effect[0]
+            single_effect = (False, single_effect[1:])
+        else:
+            single_effect = single_effect[1:-1].strip().split()
+            effect_name = single_effect[0]
+            single_effect =(True, single_effect[1:])
+        if (effect_name in e_p_dict):
+            e_p_dict[effect_name].append(single_effect)
+        else:
+            e_p_dict[effect_name] = [single_effect]
+
+    return e_p_dict
 
 def parse_actions(domain_text):
     #get actions
     # actions anywhere in the file except the end (middle of file)
     action_mof = re.findall(':action.*?\\(:', domain_text, overlapped=True)
-   
+ 
     # action at the end of the file if it exists
     reversed_domain_text = domain_text[::-1]
     action_eof = re.findall('.*?noitca:', reversed_domain_text)
@@ -40,73 +73,16 @@ def parse_actions(domain_text):
 
     action_dict = {}
     for i in range(len(actions)):
-        print("Action:", actions[i])
-        print()
-
         action_name = re.findall(':action.*?:', actions[i])
         action_name = action_name[0][7:-1].strip()
-        # print("ACTION NAME", action_name)
-        # print()
+        
 
         parameters = re.findall(':parameters.*?:', actions[i])
         parameters = parameters[0][11:-2].strip()[1:].split()
-        # print("PARAMETERS:", parameters)
-        # print()
-
-        precondition = re.findall(':precondition.*?:', actions[i])[0][13:-1].strip()
-        precondition = re.findall('\\(.*?\\)', precondition)
-        precondition_formatted = []
-        for j in range(len(precondition)):
-            if (precondition[j][1:].strip()[:3] == "and"):
-                precondition_formatted.append(precondition[j][1:-1][3:].strip()[1:])
-            else:
-                precondition_formatted.append(precondition[j][1:-1].strip())
+      
+        precondition_dict = parse_conditions(actions[i], "precondition")
         
-        precondition_dict = {}
-        for condition in precondition_formatted:
-            c = condition.split()
-            # print("HERE", c)
-            if (c[0] in precondition_dict):
-                precondition_dict[c[0]].append(c[1:])
-            else:
-                precondition_dict[c[0]] = [c[1:]]
-
-        # print("PRECONDITION:", precondition_dict)
-        # print()
-
-        effect = re.findall(':effect.*?\\(:', actions[i])
-        print("1:", effect)
-        effect = re.findall('\\(.*?\\)', effect[0])
-        print("2:", effect)
-
-        # if (effect[:3] == "and"):
-        #     effect = effect[3:].strip()
-        # effect = re.findall('\\(.*?\\)', effect, overlapped=True)
-        # print("3:", effect)
-        effect_dict = {}
-        for i in range(len(effect)):
-            single_effect = effect[i]
-            # print(single_effect)
-
-            if (single_effect[1:].strip()[:3] == "and"):
-                single_effect = single_effect[1:].strip()[3:].strip() 
-            
-            # check if the effect has a not
-            not_present = (single_effect[1:].strip()[:3] == "not")
-            if (not_present):
-                single_effect = single_effect[4:].strip()[1:-1].strip()
-                single_effect = single_effect.split()
-                effect_name = single_effect[0]
-                single_effect = (False, single_effect[1:])
-            else:
-                single_effect = single_effect[1:-1].strip().split()
-                effect_name = single_effect[0]
-                single_effect =(True, single_effect[1:])
-            if (effect_name in effect_dict):
-                effect_dict[effect_name].append(single_effect)
-            else:
-                effect_dict[effect_name] = [single_effect]
-
+        effect_dict = parse_conditions(actions[i], "effect")
         
         action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_dict}
 
