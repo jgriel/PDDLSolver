@@ -65,36 +65,51 @@ def parse_actions(domain_text):
         precondition_dict = {}
         for condition in precondition_formatted:
             c = condition.split()
-            print("HERE", c)
+            # print("HERE", c)
             if (c[0] in precondition_dict):
                 precondition_dict[c[0]].append(c[1:])
             else:
                 precondition_dict[c[0]] = [c[1:]]
 
-        print("PRECONDITION:", precondition_dict)
-        print()
+        # print("PRECONDITION:", precondition_dict)
+        # print()
 
         effect = re.findall(':effect.*?\\(:', actions[i])
-        effect = re.findall('\\(.*?\\)\\)', effect[0])[0][1:-1].strip()
-        if (effect[:3] == "and"):
-            effect = effect[3:].strip()
-        effect = re.findall('\\(.*?\\)', effect)
+        print("1:", effect)
+        effect = re.findall('\\(.*?\\)', effect[0])
+        print("2:", effect)
 
-        effect_list = []
+        # if (effect[:3] == "and"):
+        #     effect = effect[3:].strip()
+        # effect = re.findall('\\(.*?\\)', effect, overlapped=True)
+        # print("3:", effect)
+        effect_dict = {}
         for i in range(len(effect)):
-            single_effect = effect[i][1:-1].strip()
-            # check if the effect has a not
-            not_present = (single_effect[:3] == "not")
+            single_effect = effect[i]
+            # print(single_effect)
 
+            if (single_effect[1:].strip()[:3] == "and"):
+                single_effect = single_effect[1:].strip()[3:].strip() 
+            
+            # check if the effect has a not
+            not_present = (single_effect[1:].strip()[:3] == "not")
             if (not_present):
-                single_effect = single_effect[3:].strip()[1:]
+                single_effect = single_effect[4:].strip()[1:-1].strip()
                 single_effect = single_effect.split()
-                effect_list.append((False, single_effect[0], single_effect[1:]))
+                effect_name = single_effect[0]
+                single_effect = (False, single_effect[1:])
             else:
-                single_effect = single_effect.split()
-                effect_list.append((True, single_effect[0], single_effect[1:]))
+                single_effect = single_effect[1:-1].strip().split()
+                effect_name = single_effect[0]
+                single_effect =(True, single_effect[1:])
+            if (effect_name in effect_dict):
+                effect_dict[effect_name].append(single_effect)
+            else:
+                effect_dict[effect_name] = [single_effect]
+
         
-        action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_list}
+        action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_dict}
+
     return action_dict
 
 
@@ -114,7 +129,6 @@ if __name__ == "__main__":
     domain_filename = sys.argv[1]
 
     domain_dict = parse_file(domain_filename)
-    print("HERE")
     print(domain_dict)
 
 
@@ -126,3 +140,4 @@ if __name__ == "__main__":
     #                actions:{pass:{paramters:[?x, ?y, ?room], 
     #                         precondition:{'in-room':[[?x, ?room], [?y, ?room2]], 'has-ball':[[?y]]}, 
     #                         effect:[(True, 'in-room', ['?y', '?room'), (False, 'has-ball', '?x')]])]}} }
+    # in-room:[(True, [?x, ?y]), (False, [?z, ?y])]
