@@ -7,24 +7,26 @@
 
    (:action run
        :parameters  (?from ?to ?letter ?room)
-       :precondition (and not (in-room ?from ?room) (in-room ?to ?room) (has-ball ?from) (has-first-letter ?to ?letter) (has-last-letter ?from ?letter))
+       :precondition (and (not (in-room ?from ?room)) (in-room ?to ?room) (has-ball ?from) (has-first-letter ?to ?letter) (has-last-letter ?from ?letter))
        :effect (and  (has-ball ?to)
-		     (not (has-ball ?from))))
-
+		     (not (has-ball ?from)) (in-room ?from ?room)))
 
    (:action pass
        :parameters  (?from ?to ?letter ?room)
        :precondition (and  (in-room ?from ?room) (in-room ?to ?room) (has-ball ?from) (has-first-letter ?to ?letter) (has-last-letter ?from ?letter))
        :effect (and  (has-ball ?to)
 		     (not (has-ball ?from))))
-		     
+	
+    (:predicates (has-first-letter ?n ?l)
+		(has-last-letter ?n ?l)
+		(in-room ?n ?r)
+		(has-ball ?n))    
+    
     (:action move
         :parameters (?from ?to ?person)
         :precondition (and (in-room ?person ?from))
         :effect (and (in-room ?person ?to) (not (in-room ?person ?from)) (has-ball ?to)))
 		 
-   (:predicates (has-first-letter ?n ?l)
-		(has-last-letter ?n ?l)
-		(in-room ?n ?r)
-		(has-ball ?n))    
+      
     )
+

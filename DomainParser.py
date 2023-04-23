@@ -17,18 +17,27 @@ def parse_predicates(domain_text):
 
     return predicates_dict
 
+'''
+This function will parse the preconditions or effects of an action
+The format of the precondition and effect are identical so the code is the same besides the regex
+Parameters: string of the action block, whether it should parse the effect or precondition
+'''
 def parse_conditions(action, effect_precondition):
-    e_p = re.findall(':'+ effect_precondition + '.*?\\(.*:', action)
-    # print(effect)
+    # different regex for effect and precondition
+    if (effect_precondition == "effect"):
+        e_p = re.findall(':'+ effect_precondition + '.*?\\(.*:', action)
+    else:
+        e_p = re.findall(':'+ effect_precondition + '.*?\\.*:', action)
+    # if the action is at the end of the file, the regex should be different because there is no ':'
+    if (e_p == []):
+        e_p = re.findall(':'+ effect_precondition + '.*', action)
 
+    # find all individual conditions
     e_p = re.findall('\\(.*?\\)', e_p[0])
-    # print(effect)
-    # print()
 
     e_p_dict = {}
     for i in range(len(e_p)):
         single_effect = e_p[i]
-        # print(single_effect)
 
         if (single_effect[1:].strip()[:3] == "and"):
             single_effect = single_effect[1:].strip()[3:].strip() 
@@ -54,7 +63,7 @@ def parse_conditions(action, effect_precondition):
 def parse_actions(domain_text):
     #get actions
     # actions anywhere in the file except the end (middle of file)
-    action_mof = re.findall(':action.*?\\(:', domain_text, overlapped=True)
+    action_mof = re.findall(':action.*?\\(\s*:', domain_text, overlapped=True)
  
     # action at the end of the file if it exists
     reversed_domain_text = domain_text[::-1]
@@ -67,21 +76,21 @@ def parse_actions(domain_text):
         actions = action_mof + action_eof
     else:
         actions = action_mof
-    
-    # print("ACTIONS:", actions)
-    # print()
 
     action_dict = {}
     for i in range(len(actions)):
+        # name
         action_name = re.findall(':action.*?:', actions[i])
         action_name = action_name[0][7:-1].strip()
-        
 
+        # paramtersof
         parameters = re.findall(':parameters.*?:', actions[i])
         parameters = parameters[0][11:-2].strip()[1:].split()
-      
+
+        # preconditions
         precondition_dict = parse_conditions(actions[i], "precondition")
-        
+
+        # effects
         effect_dict = parse_conditions(actions[i], "effect")
         
         action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_dict}
@@ -89,7 +98,7 @@ def parse_actions(domain_text):
     return action_dict
 
 
-def parse_file(file_name):
+def parse_file(domain_filename):
     domain_file = open(domain_filename, 'r')
     
     # get domain file text
@@ -105,7 +114,19 @@ if __name__ == "__main__":
     domain_filename = sys.argv[1]
 
     domain_dict = parse_file(domain_filename)
-    print(domain_dict)
+    print("name:", domain_dict["name"])
+    print()
+    print("predicates:", domain_dict["predicates"])
+    print()
+    for key in domain_dict["actions"]:
+        print(key+":")
+        for k in domain_dict["actions"][key]:
+            print(k + ":", domain_dict["actions"][key][k])
+        print()
+
+    correctDict = {'name': 'pass-the-ball', 'predicates': {'has-first-letter': ['?n', '?l'], 'has-last-letter': ['?n', '?l'], 'in-room': ['?n', '?r'], 'has-ball': ['?n']}, 'actions': {'laugh': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(False, ['?to']), (False, ['?from'])]}}, 'run': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(False, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(True, ['?to']), (False, ['?from'])], 'in-room': [(True, ['?from', '?room'])]}}, 'pass': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(True, ['?to']), (False, ['?from'])]}}, 'move': {'parameters': ['?from', '?to', '?person'], 'precondition': {'in-room': [(True, ['?person', '?from'])]}, 'effects': {'in-room': [(True, ['?person', '?to']), (False, ['?person', '?from'])], 'has-ball': [(True, ['?to'])]}}}}
+    print("TEST")
+    print("Dictionaries Equal:", domain_dict == correctDict)
 
 
     
@@ -117,3 +138,5 @@ if __name__ == "__main__":
     #                         precondition:{'in-room':[[?x, ?room], [?y, ?room2]], 'has-ball':[[?y]]}, 
     #                         effect:[(True, 'in-room', ['?y', '?room'), (False, 'has-ball', '?x')]])]}} }
     # in-room:[(True, [?x, ?y]), (False, [?z, ?y])]
+
+
