@@ -54,8 +54,8 @@ def parse_init(text):
             inital_state[predicate_name] = [(True, bindings)]
         
     return inital_state
-    # FORMAT: { predicate_name1: [  [?x1, ?y1],  [?x2, ?y2], …,  [?xN, ?yN]  ],
-    #           predicate_name2: [  [?x1, ?y1],  [?x2, ?y2], …,  [?xN, ?yN]  ] }
+    # FORMAT: { predicate_name1: [  (T/F, [?x1, ?y1]),  (T/F, [?x2, ?y2]), …,  (T/F, [?xN, ?yN])  ],
+    #           predicate_name2: [  (T/F, [?x1, ?y1]),  (T/F, [?x2, ?y2]), …,  (T/F, [?xN, ?yN])  ] }
 
     
 def parse_goal(text):    
