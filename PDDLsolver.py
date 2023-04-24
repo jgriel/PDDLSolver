@@ -1,5 +1,6 @@
 import DomainParser, ProblemParser, sys
 
+# Use a visited
 
 def breadth_first_search():
     pass
@@ -25,7 +26,9 @@ if __name__ == "__main__":
     problem_file = sys.argv[2]
 
     domain_dict = DomainParser.parse_file(domain_file)
-    problem_file = ProblemParser.parse_file(problem_file)
-
-    print(domain_file)
-    print(problem_file)
+    problem_dict = ProblemParser.parse_file(problem_file)
+    print("DOMAIN DICT:")
+    print(domain_dict)
+    print()
+    print("PROBLEM DICT")
+    print(problem_dict)
