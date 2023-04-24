@@ -1,6 +1,18 @@
 import sys, regex as re
 
 
+def parse_file(domain_filename):
+    domain_file = open(domain_filename, 'r')
+    
+    # get domain file text
+    domain_text = ''
+    for line in domain_file:
+        domain_text += line.strip()
+    domain_text = domain_text[1:-1]
+    
+    return {'name':parse_domain_name(domain_text), 'predicates':parse_predicates(domain_text), 'actions':parse_actions(domain_text)}
+
+
 def parse_domain_name(domain_text):
     # get domain name
     return re.findall('domain.*?\\)', domain_text)[0][6:-1].strip()
@@ -16,6 +28,7 @@ def parse_predicates(domain_text):
         predicates_dict[predicate[0]] = predicate[1:]
 
     return predicates_dict
+
 
 '''
 This function will parse the preconditions or effects of an action
@@ -60,6 +73,7 @@ def parse_conditions(action, effect_precondition):
 
     return e_p_dict
 
+
 def parse_actions(domain_text):
     #get actions
     # actions anywhere in the file except the end (middle of file)
@@ -96,18 +110,6 @@ def parse_actions(domain_text):
         action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_dict}
 
     return action_dict
-
-
-def parse_file(domain_filename):
-    domain_file = open(domain_filename, 'r')
-    
-    # get domain file text
-    domain_text = ''
-    for line in domain_file:
-        domain_text += line.strip()
-    domain_text = domain_text[1:-1]
-
-    return {'name':parse_domain_name(domain_text), 'predicates':parse_predicates(domain_text), 'actions':parse_actions(domain_text)}
 
 
 if __name__ == "__main__":
