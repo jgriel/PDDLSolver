@@ -49,9 +49,9 @@ def parse_init(text):
         predicate_name = values[0]
         
         if predicate_name in inital_state.keys():
-            inital_state[predicate_name].append(bindings)
+            inital_state[predicate_name].append((True, bindings))
         else:
-            inital_state[predicate_name] = [bindings]
+            inital_state[predicate_name] = [(True, bindings)]
         
     return inital_state
     # FORMAT: { predicate_name1: [  [?x1, ?y1],  [?x2, ?y2], …,  [?xN, ?yN]  ],
