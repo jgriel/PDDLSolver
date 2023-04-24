@@ -62,7 +62,7 @@ def parse_goal(text):
     reg = re.findall(":goal.*?\\)", text)
     reg = re.findall("\\(.*?\\)", reg[0])
     goal = reg[0][1:-1].strip()
-    
+
     return goal
 
 

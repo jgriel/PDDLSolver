@@ -114,15 +114,16 @@ if __name__ == "__main__":
     domain_filename = sys.argv[1]
 
     domain_dict = parse_file(domain_filename)
-    print("name:", domain_dict["name"])
-    print()
-    print("predicates:", domain_dict["predicates"])
-    print()
-    for key in domain_dict["actions"]:
-        print(key+":")
-        for k in domain_dict["actions"][key]:
-            print(k + ":", domain_dict["actions"][key][k])
-        print()
+    print(domain_dict)
+    # print("name:", domain_dict["name"])
+    # print()
+    # print("predicates:", domain_dict["predicates"])
+    # print()
+    # for key in domain_dict["actions"]:
+    #     print(key+":")
+    #     for k in domain_dict["actions"][key]:
+    #         print(k + ":", domain_dict["actions"][key][k])
+    #     print()
 
     correctDict = {'name': 'pass-the-ball', 'predicates': {'has-first-letter': ['?n', '?l'], 'has-last-letter': ['?n', '?l'], 'in-room': ['?n', '?r'], 'has-ball': ['?n']}, 'actions': {'laugh': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(False, ['?to']), (False, ['?from'])]}}, 'run': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(False, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(True, ['?to']), (False, ['?from'])], 'in-room': [(True, ['?from', '?room'])]}}, 'pass': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(True, ['?to']), (False, ['?from'])]}}, 'move': {'parameters': ['?from', '?to', '?person'], 'precondition': {'in-room': [(True, ['?person', '?from'])]}, 'effects': {'in-room': [(True, ['?person', '?to']), (False, ['?person', '?from'])], 'has-ball': [(True, ['?to'])]}}}}
     print("TEST")
