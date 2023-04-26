@@ -1,13 +1,12 @@
 
-def expand(state, actions):
+def expand(state, domain):
 
     """Finds all the possible actions that can be taken 
         from the current state.
 
-
     Args:
         state: state Dictionary containing the information of the state. 
-        actions: The possible actions from the domain file.
+        domain: The representation of the domain file with all of the actions and predicates.
 
     Returns:
         list of states that are able to be reached from the current state
@@ -15,9 +14,23 @@ def expand(state, actions):
 
     """
 
+    actions = domain['actions']
+    predicates = domain['predicates']
+
+def match(predicates, actions): 
+    
+    for act in actions:
+        parameters = act['parameters']
+        preconditions = act['precondition']
+        effects = act['effect']
+
+
+        for pred in predicates:
+            pass
+
+
     pass
 
-def match(predicates, actions):
 
+def match_recursive(predicates, actions):
     pass
-
