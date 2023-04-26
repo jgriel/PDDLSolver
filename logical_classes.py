@@ -25,13 +25,13 @@ class Predicate(object):
     def __repr__(self):
         """Define internal string representation
         """
-        return '({!r}, {!r}, {!r})'.format(
+        return '(PREDICATE: {!r}, {!r}, {!r})'.format(
                 self.name, self.args, self.value)
 
     def __str__(self):
         """Define external representation when printed
         """
-        return '({!r}, {!r}, {!r})'.format(
+        return '(PREDICATE: {!r}, {!r}, {!r})'.format(
                 self.name, self.args, self.value)
 
     def __eq__(self, other):
@@ -71,15 +71,16 @@ class Action(object):
     def __repr__(self):
         """Define internal string representation
         """
-        return '(Name: {!r}, Parameters {!r}, Precondition: {!r}, Effect: {!r})'.format(
+        return '(ACTION: Name: {!r}, Parameters: {!r}, Precondition: {!r}, Effect: {!r})'.format(
                 self.name, self.parameters, self.precondition,
                 self.effect)
 
     def __str__(self):
         """Define external representation when printed
         """
-        string = "ACTION:\n" + self.name + "\n" + str(self.parameters) + "\n" + str(self.precondition) + "\n" + str(self.effect)
-        return string
+        return '(ACTION: Name: {!r}, Parameters: {!r}, Precondition: {!r}, Effect: {!r})'.format(
+                self.name, self.parameters, self.precondition,
+                self.effect)
 
     def __eq__(self, other):
         """Define behavior of == when applied to this object

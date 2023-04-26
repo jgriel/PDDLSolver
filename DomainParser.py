@@ -25,7 +25,6 @@ def parse_predicates(domain_text):
     predicates = []
     for i in range(len(predicates_list)):
         predicate = predicates_list[i][1:-1].split()
-        print("HERE", lc.Predicate(predicate[0], predicate[1:], None))
         predicates.append(lc.Predicate(predicate[0], predicate[1:], None))
 
     return predicates

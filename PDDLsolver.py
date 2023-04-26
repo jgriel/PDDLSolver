@@ -5,21 +5,31 @@ import DomainParser, ProblemParser, GraphGeneration
 # Use a visited
 '''
 A node representing a state of the problem
-state is a list of statements of the state [(True, has-ball, ["Noah"]), (True, in-room, ["Noah"])]
-totalDistance is the totalDistance from the start
-parent is a node representing the current nodes parent
+state - list of statements of the state [('has-ball', ["Noah"], True), ('in-room', ["Noah"], True)]
+totalDistance - totalDistance from the start to current state
+aTobDistance - distance to get from 
+parent - parent state of current state
+action - action taken to get to this state
+
 '''
-class Node:
-    def __init__(self, state, totalDistance, aTobDistance, parent, action):
-        self.totalDistance = totalDistance # f_n
+class State_Node:
+    def __init__(self, state, totalDistance, aTobDistance, parent = None, action = None):
+        self.totalDistance = totalDistance # f_n 
         self.state = state
         self.aTobDistance = aTobDistance # g_n
         self.parent = parent
-        self.action = None
+        self.action = action
 
+    def __repr__(self):
+        """Define internal string representation
+        """
+        return '(STATE: {!r}, {!r}, {!r}, {!r}, {!r})'.format(
+                self.totalDistance, self.state, self.aTobDistance, self.parent, self.action)
+    
     def __str__(self):
-        return "(" + str(self.totalDistance) + ", " + str(self.state) + ", " + str(self.aTobDistance) + ", " + ("None" if self.parent is None else str(self.parent.state)) + ")"
-
+        return '(STATE: {!r}, {!r}, {!r}, {!r}, {!r})'.format(
+            self.totalDistance, self.state, self.aTobDistance, self.parent, self.action)
+    
     def __gt__(self, other):
         return (self.totalDistance, self.aTobDistance) > (other.totalDistance, other.aTobDistance)
             
@@ -41,11 +51,9 @@ def depth_first_search(initial_state, goal_state, domain):
 Pick the state with the best hueristic 
 '''
 def greedy_best_first_search(initial_state, goal_state, domain):
-    cur_state = Node(initial_state, 0, 0, None)
+    cur_state = State_Node(initial_state, 0, 0, None, None)
     visited = []
 
-    while (cur_state != goal_state):
-        expand_list = 
     pass
 
 
@@ -101,29 +109,26 @@ def a_star_search(initial_state, goal_state, domain):
 	# return path
     pass
 
-def goalcheck(cur_state, goal_state):
+'''
+cur_state - list of predicates representing the current state
+goa_State - list of predicates included in the goal state
+'''
+def goal_check(cur_state, goal_state):
     # loop through all predicates "has-ball", "in-room"...
     for predicate in goal_state:
-        goal_predicate = goal_state[predicate]
-        cur_predicate = cur_state[predicate]
-        # loop through the tuples in the list. If predicate is has-ball then tuple_value is (True, ["Noah"])
-        for tuple_value in goal_predicate:
-            if (tuple_value not in cur_predicate):
-                return False
+        if (predicate not in cur_state):
+            return False
     
     return True
 
 def heuristic(cur_state, goal_state):
     # count number of missing values in goal state compared to cur state
     minimum_moves_remaining = 0
-    print(goal_state)
 
     # check if the condition from the goal_state in cur_state
-    for predicate_key in goal_state:
-        for condition in goal_state[predicate_key]:
-            goal_condition_present = (condition in cur_state[predicate_key])
-            if (not goal_condition_present):
-                minimum_moves_remaining += 1
+    for predicate in goal_state:
+        if (predicate not in cur_state):
+            minimum_moves_remaining += 1
 
     return minimum_moves_remaining
 
@@ -136,7 +141,7 @@ if __name__ == "__main__":
     
     
     # print(heuristic(problem_dict["init"], problem_dict["goal"]))
-    print(greedy_best_first_search(problem_dict["init"], problem_dict["goal"], domain_dict))
+    greedy_best_first_search(problem_dict["init"], problem_dict["goal"], domain_dict)
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
