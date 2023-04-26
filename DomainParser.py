@@ -35,15 +35,15 @@ This function will parse the preconditions or effects of an action
 The format of the precondition and effect are identical so the code is the same besides the regex
 Parameters: string of the action block, whether it should parse the effect or precondition
 '''
-def parse_conditions(action, effect_precondition):
+def parse_precondition_effect(action, precondition_effect):
     # different regex for effect and precondition
-    if (effect_precondition == "effect"):
-        e_p = re.findall(':'+ effect_precondition + '.*?\\(.*:', action)
+    if (precondition_effect == "effect"):
+        e_p = re.findall(':'+ precondition_effect + '.*?\\(.*:', action)
     else:
-        e_p = re.findall(':'+ effect_precondition + '.*?\\.*:', action)
+        e_p = re.findall(':'+ precondition_effect + '.*?\\.*:', action)
     # if the action is at the end of the file, the regex should be different because there is no ':'
     if (e_p == []):
-        e_p = re.findall(':'+ effect_precondition + '.*', action)
+        e_p = re.findall(':'+ precondition_effect + '.*', action)
 
     # find all individual conditions
     e_p = re.findall('\\(.*?\\)', e_p[0])
@@ -102,10 +102,10 @@ def parse_actions(domain_text):
         parameters = parameters[0][11:-2].strip()[1:].split()
 
         # preconditions
-        precondition_dict = parse_conditions(actions[i], "precondition")
+        precondition_dict = parse_precondition_effect(actions[i], "precondition")
 
         # effects
-        effect_dict = parse_conditions(actions[i], "effect")
+        effect_dict = parse_precondition_effect(actions[i], "effect")
         
         action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_dict}
 
