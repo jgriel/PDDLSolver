@@ -35,15 +35,15 @@ This function will parse the preconditions or effects of an action
 The format of the precondition and effect are identical so the code is the same besides the regex
 Parameters: string of the action block, whether it should parse the effect or precondition
 '''
-def parse_conditions(action, effect_precondition):
+def parse_precondition_effect(action, precondition_effect):
     # different regex for effect and precondition
-    if (effect_precondition == "effect"):
-        e_p = re.findall(':'+ effect_precondition + '.*?\\(.*:', action)
+    if (precondition_effect == "effect"):
+        e_p = re.findall(':'+ precondition_effect + '.*?\\(.*:', action)
     else:
-        e_p = re.findall(':'+ effect_precondition + '.*?\\.*:', action)
+        e_p = re.findall(':'+ precondition_effect + '.*?\\.*:', action)
     # if the action is at the end of the file, the regex should be different because there is no ':'
     if (e_p == []):
-        e_p = re.findall(':'+ effect_precondition + '.*', action)
+        e_p = re.findall(':'+ precondition_effect + '.*', action)
 
     # find all individual conditions
     e_p = re.findall('\\(.*?\\)', e_p[0])
@@ -102,12 +102,12 @@ def parse_actions(domain_text):
         parameters = parameters[0][11:-2].strip()[1:].split()
 
         # preconditions
-        precondition_dict = parse_conditions(actions[i], "precondition")
+        precondition_dict = parse_precondition_effect(actions[i], "precondition")
 
         # effects
-        effect_dict = parse_conditions(actions[i], "effect")
+        effect_dict = parse_precondition_effect(actions[i], "effect")
         
-        action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effects':effect_dict}
+        action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effect':effect_dict}
 
     return action_dict
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     #         print(k + ":", domain_dict["actions"][key][k])
     #     print()
 
-    correctDict = {'name': 'pass-the-ball', 'predicates': {'has-first-letter': ['?n', '?l'], 'has-last-letter': ['?n', '?l'], 'in-room': ['?n', '?r'], 'has-ball': ['?n']}, 'actions': {'laugh': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(False, ['?to']), (False, ['?from'])]}}, 'run': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(False, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(True, ['?to']), (False, ['?from'])], 'in-room': [(True, ['?from', '?room'])]}}, 'pass': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effects': {'has-ball': [(True, ['?to']), (False, ['?from'])]}}, 'move': {'parameters': ['?from', '?to', '?person'], 'precondition': {'in-room': [(True, ['?person', '?from'])]}, 'effects': {'in-room': [(True, ['?person', '?to']), (False, ['?person', '?from'])], 'has-ball': [(True, ['?to'])]}}}}
+    correctDict = {'name': 'pass-the-ball', 'predicates': {'has-first-letter': ['?n', '?l'], 'has-last-letter': ['?n', '?l'], 'in-room': ['?n', '?r'], 'has-ball': ['?n']}, 'actions': {'laugh': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effect': {'has-ball': [(False, ['?to']), (False, ['?from'])]}}, 'run': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(False, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effect': {'has-ball': [(True, ['?to']), (False, ['?from'])], 'in-room': [(True, ['?from', '?room'])]}}, 'pass': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effect': {'has-ball': [(True, ['?to']), (False, ['?from'])]}}, 'move': {'parameters': ['?from', '?to', '?person'], 'precondition': {'in-room': [(True, ['?person', '?from'])]}, 'effect': {'in-room': [(True, ['?person', '?to']), (False, ['?person', '?from'])], 'has-ball': [(True, ['?to'])]}}}}
     print("TEST")
     print("Dictionaries Equal:", domain_dict == correctDict)
 
