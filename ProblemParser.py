@@ -1,6 +1,7 @@
 import sys
 import regex as re
 # We love regex!!!
+import logical_classes as lc
 
 def parse_file(file_name):
     problem_file = open(file_name, "r")
@@ -32,7 +33,7 @@ def parse_objects(text):
     
     
 def parse_init(text):
-    inital_state = {}
+    initial_state = []
     reg = re.findall(":init.*?\\)\\)", text)
     reg = re.findall("\\(.*?\\)", reg[0][5:-1].strip())
     
@@ -48,12 +49,10 @@ def parse_init(text):
         
         predicate_name = values[0]
         
-        if predicate_name in inital_state.keys():
-            inital_state[predicate_name].append((True, bindings))
-        else:
-            inital_state[predicate_name] = [(True, bindings)]
+        initial_state.append(lc.Predicate(predicate_name, bindings, True))
+      
         
-    return inital_state
+    return initial_state
     # FORMAT: { predicate_name1: [  (T/F, [?x1, ?y1]),  (T/F, [?x2, ?y2]), …,  (T/F, [?xN, ?yN])  ],
     #           predicate_name2: [  (T/F, [?x1, ?y1]),  (T/F, [?x2, ?y2]), …,  (T/F, [?xN, ?yN])  ] }
 
@@ -64,30 +63,30 @@ def parse_goal(text):
     # find all individual conditions
     e_p = re.findall('\\(.*?\\)', e_p[0])
 
-    e_p_dict = {}
+    e_p_list = []
     for i in range(len(e_p)):
-        single_effect = e_p[i]
+        single_e_p = e_p[i]
 
-        if (single_effect[1:].strip()[:3] == "and"):
-            single_effect = single_effect[1:].strip()[3:].strip() 
+        if (single_e_p[1:].strip()[:3] == "and"):
+            single_e_p = single_e_p[1:].strip()[3:].strip() 
         
         # check if the effect has a not
-        not_present = (single_effect[1:].strip()[:3] == "not")
+        not_present = (single_e_p[1:].strip()[:3] == "not")
         if (not_present):
-            single_effect = single_effect[4:].strip()[1:-1].strip()
-            single_effect = single_effect.split()
-            effect_name = single_effect[0]
-            single_effect = (False, single_effect[1:])
+            single_e_p = single_e_p[4:].strip()[1:-1].strip()
+            single_e_p = single_e_p.split()
+            e_p_name = single_e_p[0]
+            
+            single_e_p = lc.Predicate(e_p_name, single_e_p[1:], False)
         else:
-            single_effect = single_effect[1:-1].strip().split()
-            effect_name = single_effect[0]
-            single_effect =(True, single_effect[1:])
-        if (effect_name in e_p_dict):
-            e_p_dict[effect_name].append(single_effect)
-        else:
-            e_p_dict[effect_name] = [single_effect]
+            single_e_p = single_e_p[1:-1].strip().split()
+            e_p_name = single_e_p[0]
 
-    return e_p_dict
+            single_e_p = lc.Predicate(e_p_name, single_e_p[1:], True)
+        
+        e_p_list.append(single_e_p)
+
+    return e_p_list
     
 
 

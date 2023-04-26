@@ -10,21 +10,24 @@ totalDistance is the totalDistance from the start
 parent is a node representing the current nodes parent
 '''
 class Node:
-	def __init__(self, state, totalDistance, aTobDistance, parent):
-		self.totalDistance = totalDistance # f_n
-		self.state = state
-		self.aTobDistance = aTobDistance # g_n
-		self.parent = parent
+    def __init__(self, state, totalDistance, aTobDistance, parent, action):
+        self.totalDistance = totalDistance # f_n
+        self.state = state
+        self.aTobDistance = aTobDistance # g_n
+        self.parent = parent
+        self.action = None
 
-	def __str__(self):
-		return "(" + str(self.totalDistance) + ", " + self.state + ", " + str(self.aTobDistance) + ", " + ("None" if self.parent is None else str(self.parent.state)) + ")"
-	
-	def __gt__(self, other):
-		return (self.totalDistance, self.state, self.aTobDistance) > (other.totalDistance, other.state, other.aTobDistance)
-				
-	def __lt__(self, other):
-		return (self.totalDistance, self.state, self.aTobDistance) < (other.totalDistance, other.state, other.aTobDistance)
+    def __str__(self):
+        return "(" + str(self.totalDistance) + ", " + str(self.state) + ", " + str(self.aTobDistance) + ", " + ("None" if self.parent is None else str(self.parent.state)) + ")"
 
+    def __gt__(self, other):
+        return (self.totalDistance, self.aTobDistance) > (other.totalDistance, other.aTobDistance)
+            
+    def __lt__(self, other):
+        return (self.totalDistance, self.aTobDistance) < (other.totalDistance, other.aTobDistance)
+
+    def __eq__(self, other):
+        return self.state == other.state
 
 def breadth_first_search(initial_state, goal_state, domain):
     pass
@@ -39,10 +42,10 @@ Pick the state with the best hueristic
 '''
 def greedy_best_first_search(initial_state, goal_state, domain):
     cur_state = Node(initial_state, 0, 0, None)
-    print(cur_state)
     visited = []
 
-    while (cur_state)
+    while (cur_state != goal_state):
+        expand_list = 
     pass
 
 
@@ -132,7 +135,8 @@ if __name__ == "__main__":
     problem_dict = ProblemParser.parse_file(problem_file)
     
     
-    print(heuristic(problem_dict["init"], problem_dict["goal"]))
+    # print(heuristic(problem_dict["init"], problem_dict["goal"]))
+    print(greedy_best_first_search(problem_dict["init"], problem_dict["goal"], domain_dict))
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     

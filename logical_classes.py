@@ -5,9 +5,10 @@ class Predicate(object):
 
     Attributes:
         name (str): the name of the predicate
-        args (str): the arguments of the predicate
+        args (triple): the arguments of the predicate
+        value (boolean): false represents 'not'
     """
-    def __init__(self, name, args):
+    def __init__(self, name, args, value):
         """Constructor for Fact setting up useful flags and generating appropriate statement
 
         Args:
@@ -17,21 +18,21 @@ class Predicate(object):
                 the statement
         """
         super(Predicate, self).__init__()
-        self.name = name
-        self.args = args
-        #self.supported_by = supported_by
+        self.name = name # 'in-room'
+        self.args = args # ['noah', 'room1']
+        self.value = value # True
 
     def __repr__(self):
         """Define internal string representation
         """
-        return 'Fact({!r}, {!r})'.format(
-                self.name, self.args)
+        return '({!r}, {!r}, {!r})'.format(
+                self.name, self.args, self.value)
 
     def __str__(self):
         """Define external representation when printed
         """
-        string = self.name + str(self.args)
-        return string
+        return '({!r}, {!r}, {!r})'.format(
+                self.name, self.args, self.value)
 
     def __eq__(self, other):
         """Define behavior of == when applied to this object
@@ -70,14 +71,15 @@ class Action(object):
     def __repr__(self):
         """Define internal string representation
         """
-        return 'Rule({!r}, {!r}, {!r}, {!r}, {!r}, {!r}, {!r})'.format(
+        return '(Name: {!r}, Parameters {!r}, Precondition: {!r}, Effect: {!r})'.format(
                 self.name, self.parameters, self.precondition,
                 self.effect)
 
     def __str__(self):
         """Define external representation when printed
         """
-        string = "ACTION:\n" + self.name 
+        string = "ACTION:\n" + self.name + "\n" + str(self.parameters) + "\n" + str(self.precondition) + "\n" + str(self.effect)
+        return string
 
     def __eq__(self, other):
         """Define behavior of == when applied to this object

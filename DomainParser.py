@@ -1,5 +1,5 @@
 import sys, regex as re
-
+import logical_classes as lc
 
 def parse_file(domain_filename):
     domain_file = open(domain_filename, 'r')
@@ -22,12 +22,13 @@ def parse_predicates(domain_text):
     #get predicates
     predicates_list = re.findall(':predicates.*?\\)\\)', domain_text)[0]
     predicates_list = re.findall('\\(.*?\\)', predicates_list)
-    predicates_dict = {}
+    predicates = []
     for i in range(len(predicates_list)):
         predicate = predicates_list[i][1:-1].split()
-        predicates_dict[predicate[0]] = predicate[1:]
+        print("HERE", lc.Predicate(predicate[0], predicate[1:], None))
+        predicates.append(lc.Predicate(predicate[0], predicate[1:], None))
 
-    return predicates_dict
+    return predicates
 
 
 '''
@@ -49,30 +50,30 @@ def parse_precondition_effect(action, precondition_effect):
     # find all individual conditions
     e_p = re.findall('\\(.*?\\)', e_p[0])
 
-    e_p_dict = {}
+    e_p_list = []
     for i in range(len(e_p)):
-        single_effect = e_p[i]
+        single_e_p = e_p[i]
 
-        if (single_effect[1:].strip()[:3] == "and"):
-            single_effect = single_effect[1:].strip()[3:].strip() 
+        if (single_e_p[1:].strip()[:3] == "and"):
+            single_e_p = single_e_p[1:].strip()[3:].strip() 
         
         # check if the effect has a not
-        not_present = (single_effect[1:].strip()[:3] == "not")
+        not_present = (single_e_p[1:].strip()[:3] == "not")
         if (not_present):
-            single_effect = single_effect[4:].strip()[1:-1].strip()
-            single_effect = single_effect.split()
-            effect_name = single_effect[0]
-            single_effect = (False, single_effect[1:])
+            single_e_p = single_e_p[4:].strip()[1:-1].strip()
+            single_e_p = single_e_p.split()
+            e_p_name = single_e_p[0]
+            
+            single_e_p = lc.Predicate(e_p_name, single_e_p[1:], False)
         else:
-            single_effect = single_effect[1:-1].strip().split()
-            effect_name = single_effect[0]
-            single_effect =(True, single_effect[1:])
-        if (effect_name in e_p_dict):
-            e_p_dict[effect_name].append(single_effect)
-        else:
-            e_p_dict[effect_name] = [single_effect]
+            single_e_p = single_e_p[1:-1].strip().split()
+            e_p_name = single_e_p[0]
 
-    return e_p_dict
+            single_e_p = lc.Predicate(e_p_name, single_e_p[1:], True)
+        
+        e_p_list.append(single_e_p)
+
+    return e_p_list
 
 
 def parse_actions(domain_text):
@@ -92,7 +93,7 @@ def parse_actions(domain_text):
     else:
         actions = action_mof
 
-    action_dict = {}
+    action_list = []
     for i in range(len(actions)):
         # name
         action_name = re.findall(':action.*?:', actions[i])
@@ -103,14 +104,16 @@ def parse_actions(domain_text):
         parameters = parameters[0][11:-2].strip()[1:].split()
 
         # preconditions
-        precondition_dict = parse_precondition_effect(actions[i], "precondition")
+        precondition_list = parse_precondition_effect(actions[i], "precondition")
 
         # effects
-        effect_dict = parse_precondition_effect(actions[i], "effect")
+        effect_list = parse_precondition_effect(actions[i], "effect")
         
-        action_dict[action_name] = {'parameters':parameters, 'precondition':precondition_dict, 'effect':effect_dict}
-
-    return action_dict
+        
+        action = lc.Action(action_name, parameters, precondition_list, effect_list)
+        action_list.append(action)
+       
+    return action_list
 
 
 if __name__ == "__main__":
@@ -118,29 +121,4 @@ if __name__ == "__main__":
 
     domain_dict = parse_file(domain_filename)
     print(domain_dict)
-    # print("name:", domain_dict["name"])
-    # print()
-    # print("predicates:", domain_dict["predicates"])
-    # print()
-    # for key in domain_dict["actions"]:
-    #     print(key+":")
-    #     for k in domain_dict["actions"][key]:
-    #         print(k + ":", domain_dict["actions"][key][k])
-    #     print()
-
-    correctDict = {'name': 'pass-the-ball', 'predicates': {'has-first-letter': ['?n', '?l'], 'has-last-letter': ['?n', '?l'], 'in-room': ['?n', '?r'], 'has-ball': ['?n']}, 'actions': {'laugh': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effect': {'has-ball': [(False, ['?to']), (False, ['?from'])]}}, 'run': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(False, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effect': {'has-ball': [(True, ['?to']), (False, ['?from'])], 'in-room': [(True, ['?from', '?room'])]}}, 'pass': {'parameters': ['?from', '?to', '?letter', '?room'], 'precondition': {'in-room': [(True, ['?from', '?room']), (True, ['?to', '?room'])], 'has-ball': [(True, ['?from'])], 'has-first-letter': [(True, ['?to', '?letter'])], 'has-last-letter': [(True, ['?from', '?letter'])]}, 'effect': {'has-ball': [(True, ['?to']), (False, ['?from'])]}}, 'move': {'parameters': ['?from', '?to', '?person'], 'precondition': {'in-room': [(True, ['?person', '?from'])]}, 'effect': {'in-room': [(True, ['?person', '?to']), (False, ['?person', '?from'])], 'has-ball': [(True, ['?to'])]}}}}
-    print("TEST")
-    print("Dictionaries Equal:", domain_dict == correctDict)
-
-
     
-    
-    # actions = {name: {'parameters': [(), ()], 'precondition': [(condition, false/true), (), ()], 'effect':[(), ()]}}
-    # domain_dict = {domain: 'domain name', 
-    #                predicates: {has-first-letter: [n, l], in-room: [n, r]}, 
-    #                actions:{pass:{paramters:[?x, ?y, ?room], 
-    #                         precondition:{'in-room':[[?x, ?room], [?y, ?room2]], 'has-ball':[[?y]]}, 
-    #                         effect:[(True, 'in-room', ['?y', '?room'), (False, 'has-ball', '?x')]])]}} }
-    # in-room:[(True, [?x, ?y]), (False, [?z, ?y])]
-
-
