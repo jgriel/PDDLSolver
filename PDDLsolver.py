@@ -15,7 +15,7 @@ def depth_first_search(initial_state, goal_state, domain):
 '''
 Pick the state with the best hueristic 
 '''
-def greedy_search(initial_state, goal_state, hueristic, domain):
+def greedy_best_first_search(initial_state, goal_state, domain):
     pass
 
 
@@ -23,7 +23,7 @@ def greedy_search(initial_state, goal_state, hueristic, domain):
 Find the state that will get you to goal in shortest path
 We assume moveing from one state to the next is just a cost of 1 so we do not need a cost_map just a huerstic to estimate the cost
 '''
-def a_star_search(initial_state, goal_state, hueristic, domain):
+def a_star_search(initial_state, goal_state, domain):
 	# path = []
 	
 	# visited = set()
@@ -83,6 +83,18 @@ def goalcheck(cur_state, goal_state):
     
     return True
 
+def heuristic(cur_state, goal_state):
+    # count number of missing values in goal state compared to cur state
+    minimum_moves_remaining = 0
+    for predicate_key in goal_state:
+        for condition in goal_state[predicate_key]:
+            goal_condition_present = (condition in cur_state[predicate_key])
+            if (not goal_condition_present):
+                minimum_moves_remaining += 1
+
+    print(predicate_key)
+    
+    return minimum_moves_remaining
 
 if __name__ == "__main__":
     domain_file = sys.argv[1]
@@ -91,12 +103,14 @@ if __name__ == "__main__":
     domain_dict = DomainParser.parse_file(domain_file)
     problem_dict = ProblemParser.parse_file(problem_file)
     
+    
+    print(heuristic(problem_dict["init"], problem_dict["goal"]))
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
     
-    print("DOMAIN DICT:")
-    print(domain_dict)
-    print()
-    print("PROBLEM DICT")
-    print(problem_dict)
+    # print("DOMAIN DICT:")
+    # print(domain_dict)
+    # print()
+    # print("PROBLEM DICT")
+    # print(problem_dict)

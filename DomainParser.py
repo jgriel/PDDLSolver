@@ -42,6 +42,7 @@ def parse_precondition_effect(action, precondition_effect):
     else:
         e_p = re.findall(':'+ precondition_effect + '.*?\\.*:', action)
     # if the action is at the end of the file, the regex should be different because there is no ':'
+
     if (e_p == []):
         e_p = re.findall(':'+ precondition_effect + '.*', action)
 

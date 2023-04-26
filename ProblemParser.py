@@ -59,11 +59,36 @@ def parse_init(text):
 
     
 def parse_goal(text):    
-    reg = re.findall(":goal.*?\\)", text)
-    reg = re.findall("\\(.*?\\)", reg[0])
-    goal = reg[0][1:-1].strip()
+    e_p = re.findall(':goal.*', text)
+
+    # find all individual conditions
+    e_p = re.findall('\\(.*?\\)', e_p[0])
+
+    e_p_dict = {}
+    for i in range(len(e_p)):
+        single_effect = e_p[i]
+
+        if (single_effect[1:].strip()[:3] == "and"):
+            single_effect = single_effect[1:].strip()[3:].strip() 
+        
+        # check if the effect has a not
+        not_present = (single_effect[1:].strip()[:3] == "not")
+        if (not_present):
+            single_effect = single_effect[4:].strip()[1:-1].strip()
+            single_effect = single_effect.split()
+            effect_name = single_effect[0]
+            single_effect = (False, single_effect[1:])
+        else:
+            single_effect = single_effect[1:-1].strip().split()
+            effect_name = single_effect[0]
+            single_effect =(True, single_effect[1:])
+        if (effect_name in e_p_dict):
+            e_p_dict[effect_name].append(single_effect)
+        else:
+            e_p_dict[effect_name] = [single_effect]
+
+    return e_p_dict
     
-    return goal
 
 
 if __name__ == "__main__":
