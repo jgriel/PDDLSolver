@@ -8,19 +8,23 @@ class Predicate(object):
         args (triple): the arguments of the predicate
         value (boolean): false represents 'not'
     """
-    def __init__(self, name, args, value):
+    def __init__(self, name, args, value=None):
         """Constructor for Fact setting up useful flags and generating appropriate statement
 
         Args:
-            statement (str|Statement): The statement of this fact, basically what the
-                fact actually says
-            supported_by (listof Fact|Rule): Facts/Rules that allow inference of
-                the statement
+            name (str): The name of the predicate
+            args (of arguements): The variable arguments or the actual arguments of the predicate.
         """
         super(Predicate, self).__init__()
-        self.name = name # 'in-room'
-        self.args = args # ['noah', 'room1']
+        
+        self.name = name
+        self.args = [t if isinstance(t, Term) else Term(t) for t in args]
+        
+        # self.name = name # 'in-room'
+        # self.args = args # ['noah', 'room1']
         self.value = value # True
+
+        
 
     def __repr__(self):
         """Define internal string representation
@@ -57,10 +61,10 @@ class Action(object):
         """
 
         Args:
-            rule (listof list): Raw representation of statements making up LHS and
-                RHS of this rule
-            supported_by (listof Fact|Rule): Facts/Rules that allow inference of
-                the statement
+            name (str): the name of the action to be taken
+            parameters (list of variables): the parameters for the action.
+            precondition (list of Predicates): the preconditions of an action (LHS of a rule almost)
+            effect (list of Predicates): the effect of the action (RHS of a rule almost)
         """
         super(Action, self).__init__()
         self.name = name
