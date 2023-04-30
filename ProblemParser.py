@@ -28,8 +28,13 @@ def parse_objects(text):
     reg = re.findall(":objects.*?\\)", text)
     objects = reg[0][:-1].strip().split(" ")
     objects.pop(0)
+
+    obs = []
+
+    for ob in objects:
+        obs.append(lc.Term(ob))
     
-    return objects
+    return obs
     
     
 def parse_init(text):

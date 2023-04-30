@@ -41,7 +41,7 @@ class Predicate(object):
     def __eq__(self, other):
         """Define behavior of == when applied to this object
         """
-        return isinstance(other, Predicate) and self.name == other.name and self.args == other.args
+        return isinstance(other, Predicate) and self.name == other.name and self.args == other.args and other.value == self.value
 
     def __ne__(self, other):
         """Define behavior of != when applied to this object
@@ -89,8 +89,8 @@ class Action(object):
     def __eq__(self, other):
         """Define behavior of == when applied to this object
         """
-        is_rule = isinstance(other, Rule)
-        return is_rule and self.lhs == other.lhs and self.rhs == other.rhs
+        is_action = isinstance(other, Action)
+        return is_action and self.name == other.name and self.rhs == other.rhs
 
     def __ne__(self, other):
         """Define behavior of != when applied to this object
@@ -98,9 +98,7 @@ class Action(object):
         return not self == other
 
 class Statement(object):
-    """Represents a statement in our knowledge base, e.g. (attacked Ai Nosliw),
-        (diamonds Loot), (isa Sorceress Wizard), etc. These statements show up
-        in Facts or on the LHS and RHS of Rules
+    """
 
     Attributes:
         terms (listof Term): List of terms (Variable or Constant) in the

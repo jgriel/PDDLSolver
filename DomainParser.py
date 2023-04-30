@@ -100,7 +100,10 @@ def parse_actions(domain_text):
 
         # paramtersof
         parameters = re.findall(':parameters.*?:', actions[i])
-        parameters = parameters[0][11:-2].strip()[1:].split()
+        params = parameters[0][11:-2].strip()[1:].split()
+        parameters = []
+        for param in params:
+            parameters.append(lc.Term(param))
 
         # preconditions
         precondition_list = parse_precondition_effect(actions[i], "precondition")
