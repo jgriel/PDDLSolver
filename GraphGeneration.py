@@ -1,3 +1,6 @@
+from util import *
+from logical_classes import *
+
 
 def expand(state, domain):
 
@@ -20,25 +23,39 @@ def expand(state, domain):
     currState = state['state']
 
 
+    getPossible(predicates, actions)
 
-def match(predicates, actions): 
+
+
+def getPossible(predicates, actions):
     
     for act in actions:
         parameters = act['parameters']
         preconditions = act['precondition']
         effects = act['effect']
 
+        possible_predicates = []
 
-        for pred in predicates:
-            pass
+        for cond in preconditions:
+
+            for pred in predicates:
+                match(cond, pred)
 
 
-    pass
-
-
-def match_recursive(predicates, actions):
-    pass
 
 
 def instantiate(parameters, action):
     pass
+
+
+def ask(predicates, precondition):
+
+    bindings_list = ListOfBindings()
+    for predicate in predicates:
+        bindings = match(predicate.args, precondition.args)
+
+        bindings_list.add_bindings(bindings)
+
+    return bindings_list if bindings_list.list_of_bindings else []
+    
+

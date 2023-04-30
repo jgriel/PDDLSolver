@@ -75,9 +75,9 @@ def instantiate(statement, bindings):
             return term
 
     new_terms = [handle_term(t) for t in statement.terms]
-    return lc.Statement([statement.predicate] + new_terms)
+    return lc.Predicate([statement.predicate] + new_terms)
 
-def factq(element):
+def predq(element):
     """Check if element is a fact
 
     Args:
@@ -86,9 +86,9 @@ def factq(element):
     Returns:
         bool
     """
-    return isinstance(element, lc.Fact)
+    return isinstance(element, lc.Predicate)
 
-def ruleq(element):
+def acteq(element):
     """Check if element is a rule
 
     Args:
@@ -97,7 +97,7 @@ def ruleq(element):
     Returns:
         bool
     """
-    return isinstance(element, lc.Rule)
+    return isinstance(element, lc.Action)
 
 def printv(message, level, verbose, data=[]):
     """Prints given message formatted with data if passed in verbose flag is greater than level
