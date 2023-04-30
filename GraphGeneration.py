@@ -18,44 +18,71 @@ def expand(state, domain):
     """
 
     actions = domain['actions']
-    predicates = domain['predicates']
-
-    currState = state['state']
+    newState = state
 
 
-    getPossible(predicates, actions)
+    get_possible_parameters(state, actions)
 
 
 
-def getPossible(predicates, actions):
+
+
+    return
+
+
+
+def get_possible_parameters(predicates, actions):
     
     for act in actions:
-        parameters = act['parameters']
-        preconditions = act['precondition']
-        effects = act['effect']
+        parameters = act.parameters
+        precondition = act.precondition
+        effect = act.effect
 
-        possible_predicates = []
+        filtered_predicates = filter_predicates(predicates, precondition)
 
-        for cond in preconditions:
+        possible_parameters = []
 
-            for pred in predicates:
-                match(cond, pred)
+        for condition in precondition:
+            possible_bindings = ask(condition, filtered_predicates)
+            possible_parameters.append(possible_bindings)
 
 
 
+    print(possible_parameters)
 
-def instantiate(parameters, action):
+def ask(condition, predicates):
+    
+    bindingsList = ListOfBindings()
+    
+    for pred in predicates:
+        binding = match(pred, condition)
+
+        if binding != False:
+            bindingsList.add_bindings(binding)
+
+    return bindingsList  
+
+
+
+def bind_parameters(paramteters, bindings):
     pass
 
 
-def ask(predicates, precondition):
 
-    bindings_list = ListOfBindings()
-    for predicate in predicates:
-        bindings = match(predicate.args, precondition.args)
-
-        bindings_list.add_bindings(bindings)
-
-    return bindings_list if bindings_list.list_of_bindings else []
+def filter_predicates(predicates, precondition):
+    names = []
+    for condition in precondition:
+        names.append(condition.name)
     
+    filtered = []
+    for predicate in predicates:
+        if predicate.name in names:
+            filtered.append(predicate)
+
+    return filtered
+
+
+
+def computeAction(parameters, action, state):
+    pass
 

@@ -18,46 +18,46 @@ def is_var(var):
 
     return isinstance(var, lc.Variable)
 
-def match(state1, state2, bindings=None):
+def match(pred1, pred2, bindings=None):
     """Match two statements and return the associated bindings or False if there
         is no binding
 
     Args:
-        state1 (Statement): statement to match with state2
-        state2 (Statement): statement to match with state1
+        pred1 (Statement): statement to match with pred2
+        pred2 (Statement): statement to match with pred1
         bindings (Bindings|None): already associated bindings
 
     Returns:
         Bindings|False: either associated bindings or no match found
     """
-    if len(state1.terms) != len(state2.terms) or state1.predicate != state2.predicate:
+    if len(pred1.args) != len(pred2.args) or pred1.name != pred2.name:
         return False
     if not bindings:
         bindings = lc.Bindings()
-    return match_recursive(state1.terms, state2.terms, bindings)
+    return match_recursive(pred1.args, pred2.args, bindings)
 
-def match_recursive(terms1, terms2, bindings):  # recursive...
+def match_recursive(args1, args2, bindings):  # recursive...
     """Recursive helper for match
 
     Args:
-        terms1 (listof Term): terms to match with terms2
-        terms2 (listof Term): terms to match with terms1
+        args1 (listof Term): terms to match with args2
+        args2 (listof Term): terms to match with args1
         bindings (Bindings): already associated bindings
 
     Returns:
         Bindings|False: either associated bindings or no match found
     """
-    if len(terms1) == 0:
+    if len(args1) == 0:
         return bindings
-    if is_var(terms1[0]):
-        if not bindings.test_and_bind(terms1[0], terms2[0]):
+    if is_var(args1[0]):
+        if not bindings.test_and_bind(args1[0], args2[0]):
             return False
-    elif is_var(terms2[0]):
-        if not bindings.test_and_bind(terms2[0], terms1[0]):
+    elif is_var(args2[0]):
+        if not bindings.test_and_bind(args2[0], args1[0]):
             return False
-    elif terms1[0] != terms2[0]:
+    elif args1[0] != args2[0]:
         return False
-    return match_recursive(terms1[1:], terms2[1:], bindings)
+    return match_recursive(args1[1:], args2[1:], bindings)
 
 def instantiate(statement, bindings):
     """Generate Statement from given statement and bindings. Constructed statement
@@ -74,7 +74,7 @@ def instantiate(statement, bindings):
         else:
             return term
 
-    new_terms = [handle_term(t) for t in statement.terms]
+    new_terms = [handle_term(t) for t in statement.args]
     return lc.Predicate([statement.predicate] + new_terms)
 
 def predq(element):
