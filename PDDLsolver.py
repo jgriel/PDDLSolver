@@ -141,7 +141,7 @@ if __name__ == "__main__":
     
     
     # print(heuristic(problem_dict["init"], problem_dict["goal"]))
-    greedy_best_first_search(problem_dict["init"], problem_dict["goal"], domain_dict)
+    greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict)
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     

@@ -17,6 +17,10 @@ def expand(state, domain):
     actions = domain['actions']
     predicates = domain['predicates']
 
+    currState = state['state']
+
+
+
 def match(predicates, actions): 
     
     for act in actions:
@@ -33,4 +37,8 @@ def match(predicates, actions):
 
 
 def match_recursive(predicates, actions):
+    pass
+
+
+def instantiate(parameters, action):
     pass

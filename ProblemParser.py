@@ -14,7 +14,7 @@ def parse_file(file_name):
         
     text = text[1:-1]
     
-    return { "domain": parse_domain(text), "objects": parse_objects(text), "init": parse_init(text), "goal": parse_goal(text) }
+    return { "domain": parse_domain(text), "objects": parse_objects(text), "state": parse_init(text), "goal": parse_goal(text) }
     
     
 def parse_domain(text):
