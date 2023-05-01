@@ -30,13 +30,13 @@ def match(pred1, pred2, bindings=None):
     Returns:
         Bindings|False: either associated bindings or no match found
     """
-    if len(pred1.args) != len(pred2.args) or pred1.name != pred2.name:
+    if len(pred1.args) != len(pred2.args) or pred1.name != pred2.name or pred1.value != pred2.value:
         return False
     if not bindings:
         bindings = lc.Bindings()
-    return match_recursive(pred1.args, pred2.args, bindings)
+    return match_recursive(pred1.args, pred2.args, pred1.value, pred2.value, bindings)
 
-def match_recursive(args1, args2, bindings):  # recursive...
+def match_recursive(args1, args2, val1, val2, bindings):  # recursive...
     """Recursive helper for match
 
     Args:
@@ -57,7 +57,9 @@ def match_recursive(args1, args2, bindings):  # recursive...
             return False
     elif args1[0] != args2[0]:
         return False
-    return match_recursive(args1[1:], args2[1:], bindings)
+    elif val1 != val2:
+        return False
+    return match_recursive(args1[1:], args2[1:], val1, val2, bindings)
 
 def instantiate(statement, bindings):
     """Generate Statement from given statement and bindings. Constructed statement
@@ -75,7 +77,7 @@ def instantiate(statement, bindings):
             return term
 
     new_terms = [handle_term(t) for t in statement.args]
-    return lc.Predicate([statement.predicate] + new_terms)
+    return lc.Predicate(statement.name, new_terms)
 
 def predq(element):
     """Check if element is a fact

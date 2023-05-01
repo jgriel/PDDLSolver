@@ -1,5 +1,6 @@
 from util import *
 from logical_classes import *
+import itertools
 
 
 def expand(state, domain):
@@ -34,57 +35,54 @@ def expand(state, domain):
 def get_possible_parameters(predicates, actions):
     
     for act in actions:
+        print(act.name)
         parameters = act.parameters
         precondition = act.precondition
         effect = act.effect
 
         filtered_predicates = filter_predicates(predicates, precondition)
 
-        possible_parameters = []
+        filtered_objects = filter_objects(filtered_predicates)
+        possible_parameters = generate_combinations(filtered_objects, parameters)
+        possible_actions = []
+        print(possible_parameters)
+        print()
 
-        # infer_precondition(filtered_predicates, precondition)
+def generate_combinations(objects, parameters):
+    print(objects)
+    combinations = list(itertools.permutations(objects, len(parameters)))
+    for combo in combinations:
+        string = "["
+        for ob in combo:
+            string += str(ob) + ", "
+        string = string[:-2] + "]"
+        print(string)
+    return combinations
+
+def iterate_conditions(objects, predicates, precondition):            
+
+    pass
 
 
-
-    # print(possible_parameters)
 
 def infer_precondition(predicates, precondition):
     firstCondition = precondition[0]
-    possible_bindings = ask(firstCondition, predicates)
-    possible_new_conditions = []
-    if possible_bindings != False:
-        for binding in possible_bindings:
-                newCondition = []
-                for condition in precondition[1:]:
-                    print("HERE")
-                    newCondition.append(instantiate(condition, binding))
-                    print("HERE2")
-                recursive_conditions = infer_precondition(predicates, newCondition[1:])
-                
-                if not recursive_conditions:
-                    newCondition = [instantiate(firstCondition, binding)]
-                    for recur_cond in recursive_conditions:
-                        newCondition.append(recur_cond)
-                else:
-                    return False
-        possible_new_conditions.append(newCondition)
-    else:
-        return False
+    bindings = ask(firstCondition, predicates)
+
+    
 
 
 
 def ask(condition, predicates):
     
     bindingsList = ListOfBindings()
-    predicateList = []
     for pred in predicates:
         binding = match(pred, condition)
 
         if binding != False:
             bindingsList.add_bindings(binding)
-            predicateList.append(pred)
 
-    return (predicateList, bindingsList)
+    return bindingsList
 
 
 
@@ -105,7 +103,13 @@ def filter_predicates(predicates, precondition):
 
     return filtered
 
-
+def filter_objects(predicates):
+    objects = []
+    for predicate in predicates:
+        for arg in predicate.args:
+            if arg not in objects:
+                objects.append(arg)
+    return objects
 
 def computeAction(parameters, action, state):
     pass
