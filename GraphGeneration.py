@@ -42,7 +42,7 @@ def get_possible_parameters(predicates, actions):
 
         possible_parameters = []
 
-        infer_precondition(filtered_predicates, precondition)
+        # infer_precondition(filtered_predicates, precondition)
 
 
 
