@@ -42,29 +42,53 @@ def get_possible_parameters(predicates, actions):
 
         possible_parameters = []
 
-        for condition in precondition:
-            possible_bindings = ask(condition, filtered_predicates)
-            possible_parameters.append(possible_bindings)
+        infer_precondition(filtered_predicates, precondition)
 
 
 
-    print(possible_parameters)
+    # print(possible_parameters)
+
+def infer_precondition(predicates, precondition):
+    firstCondition = precondition[0]
+    possible_bindings = ask(firstCondition, predicates)
+    possible_new_conditions = []
+    if possible_bindings != False:
+        for binding in possible_bindings:
+                newCondition = []
+                for condition in precondition[1:]:
+                    print("HERE")
+                    newCondition.append(instantiate(condition, binding))
+                    print("HERE2")
+                recursive_conditions = infer_precondition(predicates, newCondition[1:])
+                
+                if not recursive_conditions:
+                    newCondition = [instantiate(firstCondition, binding)]
+                    for recur_cond in recursive_conditions:
+                        newCondition.append(recur_cond)
+                else:
+                    return False
+        possible_new_conditions.append(newCondition)
+    else:
+        return False
+
+
 
 def ask(condition, predicates):
     
     bindingsList = ListOfBindings()
-    
+    predicateList = []
     for pred in predicates:
         binding = match(pred, condition)
 
         if binding != False:
             bindingsList.add_bindings(binding)
+            predicateList.append(pred)
 
-    return bindingsList  
+    return (predicateList, bindingsList)
 
 
 
-def bind_parameters(paramteters, bindings):
+def bind_conditions(paramteters, bindings):
     pass
 
 

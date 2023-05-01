@@ -97,58 +97,58 @@ class Action(object):
         """
         return not self == other
 
-class Statement(object):
-    """
+# class Statement(object):
+#     """
 
-    Attributes:
-        terms (listof Term): List of terms (Variable or Constant) in the
-            statement, e.g. 'Nosliw' or '?d'
-        predicate (str): The predicate of the statement, e.g. isa, hero, needs
-    """
-    def __init__(self, statement_list=[]):
-        """Constructor for Statements with optional list of Statements that are
-            converted to appropriate terms (and one predicate)
+#     Attributes:
+#         terms (listof Term): List of terms (Variable or Constant) in the
+#             statement, e.g. 'Nosliw' or '?d'
+#         predicate (str): The predicate of the statement, e.g. isa, hero, needs
+#     """
+#     def __init__(self, statement_list=[]):
+#         """Constructor for Statements with optional list of Statements that are
+#             converted to appropriate terms (and one predicate)
 
-        Args:
-            statement_list (mostly listof str|Term, first element is str): The element at
-                index 0 is the predicate of the statement (a str) while the rest of
-                the list is either instantiated Terms or strings to be passed to the
-                Term constructor
-        """
-        super(Statement, self).__init__()
-        self.terms = []
-        self.predicate = ""
+#         Args:
+#             statement_list (mostly listof str|Term, first element is str): The element at
+#                 index 0 is the predicate of the statement (a str) while the rest of
+#                 the list is either instantiated Terms or strings to be passed to the
+#                 Term constructor
+#         """
+#         super(Statement, self).__init__()
+#         self.terms = []
+#         self.predicate = ""
 
-        if statement_list:
-            self.predicate = statement_list[0]
-            self.terms = [t if isinstance(t, Term) else Term(t) for t in statement_list[1:]]
+#         if statement_list:
+#             self.predicate = statement_list[0]
+#             self.terms = [t if isinstance(t, Term) else Term(t) for t in statement_list[1:]]
 
-    def __repr__(self):
-        """Define internal string representation
-        """
-        return 'Statement({!r}, {!r})'.format(self.predicate, self.terms)
+#     def __repr__(self):
+#         """Define internal string representation
+#         """
+#         return 'Statement({!r}, {!r})'.format(self.predicate, self.terms)
 
-    def __str__(self):
-        """Define external representation when printed
-        """
-        return "(" + self.predicate + " " + ' '.join((str(t) for t in self.terms)) + ")"
+#     def __str__(self):
+#         """Define external representation when printed
+#         """
+#         return "(" + self.predicate + " " + ' '.join((str(t) for t in self.terms)) + ")"
 
-    def __eq__(self, other):
-        """Define behavior of == when applied to this object
-        """
-        if self.predicate != other.predicate:
-            return False
+#     def __eq__(self, other):
+#         """Define behavior of == when applied to this object
+#         """
+#         if self.predicate != other.predicate:
+#             return False
 
-        for self_term, other_term in zip(self.terms, other.terms):
-            if self_term != other_term:
-                return False
+#         for self_term, other_term in zip(self.terms, other.terms):
+#             if self_term != other_term:
+#                 return False
 
-        return True
+#         return True
 
-    def __ne__(self, other):
-        """Define behavior of != when applied to this object
-        """
-        return not self == other
+#     def __ne__(self, other):
+#         """Define behavior of != when applied to this object
+#         """
+#         return not self == other
 
 class Term(object):
     """Represents a term (a Variable or Constant) in our knowledge base. Can
@@ -402,8 +402,8 @@ class ListOfBindings(object):
         """
         string = ""
         for binding, associated_fact_rules in self.list_of_bindings:
-            string += "Bindings for Facts and Rules: " + str(binding) + "\n"
-            string += "Associated Facts and Rules: ["
+            string += "Bindings for Predicates and Terms: " + str(binding) + "\n"
+            string += "Associated Statements ["
             string += ", ".join((str(f) for f in associated_fact_rules)) + "]\n"
         return string
 
