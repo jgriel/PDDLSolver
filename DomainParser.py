@@ -7,7 +7,8 @@ def parse_file(domain_filename):
     # get domain file text
     domain_text = ''
     for line in domain_file:
-        domain_text += line.strip()
+        if (len(line.strip()) > 0 and line.strip()[0] != ";"):
+            domain_text += line.strip()
     domain_text = domain_text[1:-1]
     
     return {'name':parse_domain_name(domain_text), 'predicates':parse_predicates(domain_text), 'actions':parse_actions(domain_text)}
