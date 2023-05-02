@@ -22,7 +22,7 @@ def expand(state, domain):
     newState = state
 
 
-    get_possible_parameters(state, actions)
+    get_possible_actions(state, actions)
 
 
 
@@ -32,7 +32,7 @@ def expand(state, domain):
 
 
 
-def get_possible_parameters(predicates, actions):
+def get_possible_actions(predicates, actions):
     
     for act in actions:
         print(act.name)
@@ -43,34 +43,33 @@ def get_possible_parameters(predicates, actions):
         filtered_predicates = filter_predicates(predicates, precondition)
 
         filtered_objects = filter_objects(filtered_predicates)
-        possible_parameters = generate_combinations(filtered_objects, parameters)
+
+        infer_precondition(parameters, filtered_objects, filtered_predicates, precondition)
+        # possible_parameters = itertools.permutations(filtered_objects, parameters)
         possible_actions = []
-        print(possible_parameters)
-        print()
 
-def generate_combinations(objects, parameters):
-    print(objects)
-    combinations = list(itertools.permutations(objects, len(parameters)))
-    for combo in combinations:
-        string = "["
-        for ob in combo:
-            string += str(ob) + ", "
-        string = string[:-2] + "]"
-        print(string)
-    return combinations
-
-def iterate_conditions(objects, predicates, precondition):            
-
-    pass
-
-
-
-def infer_precondition(predicates, precondition):
+def infer_precondition(predicates, precondition, bindings_list=[]):
     firstCondition = precondition[0]
-    bindings = ask(firstCondition, predicates)
+
+    bindings_list = ask(firstCondition, predicates)
+
+    if bindings_list == False:
+        return False
+    for bindings in bindings_list:
+        if len(precondition) != 1:
+            newCondition = []
+            for condition in precondition[1:]:
+                newCondition.append(instantiate(condition, bindings)) 
+            bindings_list = infer_precondition(predicates, newCondition)
+        
+
 
     
-
+def get_param_index(param, parameters):
+    return parameters.index(param)
+    
+def contains_binding():
+    pass
 
 
 def ask(condition, predicates):
@@ -82,7 +81,10 @@ def ask(condition, predicates):
         if binding != False:
             bindingsList.add_bindings(binding)
 
-    return bindingsList
+    if bindingsList.list_of_bindings != []:
+        return bindingsList
+    else:
+        return False
 
 
 

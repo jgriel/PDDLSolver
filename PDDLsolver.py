@@ -146,10 +146,10 @@ if __name__ == "__main__":
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
     
-    # print("DOMAIN DICT:")
-    # print(domain_dict)
-    # print()
-    # print("PROBLEM DICT")
-    # print(problem_dict)
+    print("DOMAIN DICT:")
+    print(domain_dict)
+    print()
+    print("PROBLEM DICT")
+    print(problem_dict)
 
     GraphGeneration.expand(problem_dict['state'], domain_dict)

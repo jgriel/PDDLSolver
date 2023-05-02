@@ -61,7 +61,7 @@ def match_recursive(args1, args2, val1, val2, bindings):  # recursive...
         return False
     return match_recursive(args1[1:], args2[1:], val1, val2, bindings)
 
-def instantiate(statement, bindings):
+def instantiate(statement, bindings, value):
     """Generate Statement from given statement and bindings. Constructed statement
         has bound values for variables if they exist in bindings.
 
@@ -77,7 +77,7 @@ def instantiate(statement, bindings):
             return term
 
     new_terms = [handle_term(t) for t in statement.args]
-    return lc.Predicate(statement.name, new_terms)
+    return lc.Predicate(statement.name, new_terms, value)
 
 def predq(element):
     """Check if element is a fact
