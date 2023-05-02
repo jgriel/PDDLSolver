@@ -19,10 +19,13 @@ def expand(state, domain):
     """
 
     actions = domain['actions']
-    newState = state
 
 
-    get_possible_actions(state, actions)
+    possible_actions = get_possible_actions(state, actions)
+
+    for key in possible_actions:
+        for possibility in possible_actions[key]:
+            new_state = compute_action(possibility, actions[key], state)
 
 
 
@@ -33,9 +36,11 @@ def expand(state, domain):
 
 
 def get_possible_actions(predicates, actions):
+
+    action_dict = dict
     
     for act in actions:
-        print(act.name)
+        # print(act.name)
         parameters = act.parameters
         precondition = act.precondition
         effect = act.effect
@@ -46,10 +51,13 @@ def get_possible_actions(predicates, actions):
 
         # match_conditions(precondition, bindings_list)
         matched = match_conditions(precondition, bindings_list, predicates)
+            
+        # for match in matched:
+        #     print(match)
+        #     print()
+        action_dict[act.name] = matched
 
-        for match in matched:
-            print(match)
-            print()
+    return action_dict
 
 
 
@@ -59,10 +67,10 @@ def get_bindings(predicates, precondition, bindings_list=[]):
         bindings_list = ask(condition, predicates)
         if bindings_list != False:
             total_list.append(bindings_list)
-            print()
-            print(condition.name)
-            print(bindings_list)
-            print()
+            # print()
+            # print(condition.name)
+            # print(bindings_list)
+            # print()
         else:
             return False
 
@@ -90,16 +98,14 @@ def match_conditions(precondition, bindings_list, predicates):
                 new_precondition.append(instantiate(condition, binding, condition.value))
             
             bound_precondition_list = match_conditions(new_precondition, bindings_list[1:], predicates)
-            print("RECURSIVE CALL", bound_precondition_list)
+            
             if bound_precondition_list != False:
-                print(len(bound_precondition_list))
                 for bound_precondition in bound_precondition_list:
+                    # print(bound_precondition)
                     bound_precondition.insert(0, first_precondition)
-                    possible_conditions.append(bound_precondition)
+                    if bound_precondition not in possible_conditions:
+                        possible_conditions.append(bound_precondition)
     
-    # print()
-    # print()
-    # print(possible_conditions)
     return possible_conditions
         
 def contains_variables(condition):
@@ -153,6 +159,6 @@ def filter_objects(predicates):
                 objects.append(arg)
     return objects
 
-def computeAction(parameters, action, state):
+def compute_action(parameters, action, state):
     pass
 
