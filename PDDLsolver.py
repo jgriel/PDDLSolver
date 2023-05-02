@@ -151,5 +151,5 @@ if __name__ == "__main__":
     print()
     print("PROBLEM DICT")
     print(problem_dict)
-
+    print()
     GraphGeneration.expand(problem_dict['state'], domain_dict)
