@@ -47,16 +47,13 @@ def get_possible_actions(predicates, actions):
     action_dict = dict()
     
     for act in actions:
-        # print(act.name)
-        parameters = act.parameters
+        print(act.name)
         precondition = act.precondition
-        effect = act.effect
 
         filtered_predicates = filter_predicates(predicates, precondition)
 
         bindings_list = get_bindings(filtered_predicates, precondition)
 
-        # match_conditions(precondition, bindings_list)
         matched = match_conditions(precondition, bindings_list, predicates)
             
         # for match in matched:
@@ -78,9 +75,10 @@ def get_bindings(predicates, precondition, bindings_list=[]):
             # print(condition.name)
             # print(bindings_list)
             # print()
-        else:
-            return False
+        print("IN GET BINDINGS: ", bindings_list)
 
+    # print(total_list)
+    
     return total_list
 
 def match_conditions(precondition, bindings_list, predicates):
@@ -89,8 +87,14 @@ def match_conditions(precondition, bindings_list, predicates):
         new_preconditions = []
         for binding in bindings_list[0]:
             last_condition = instantiate(precondition[0], binding, precondition[0].value)
-            if last_condition in predicates:
-                if not contains_variables(last_condition):
+            contained = get_predicate(last_condition, predicates)
+
+            if not contained:
+                valid = (last_condition.value == False)
+            else:
+                valid = (contained.value == last_condition.value)
+
+            if valid and not contains_variables(last_condition):
                     new_preconditions.append([last_condition])
         if new_preconditions != []: 
             return new_preconditions
@@ -99,7 +103,12 @@ def match_conditions(precondition, bindings_list, predicates):
     possible_conditions = []
     for binding in bindings_list[0]:
         first_precondition = instantiate(precondition[0], binding, precondition[0].value)
-        if first_precondition in predicates:
+        contained = get_predicate(first_precondition, predicates)
+        if not contained:
+            valid = (first_precondition.value == False)
+        else:
+            valid = (contained.value == first_precondition.value)
+        if valid:
             new_precondition = []
             for condition in precondition[1:]:
                 new_precondition.append(instantiate(condition, binding, condition.value))
@@ -114,22 +123,18 @@ def match_conditions(precondition, bindings_list, predicates):
                         possible_conditions.append(bound_precondition)
     
     return possible_conditions
+
+def get_predicate(predicate, predicates):
+    for pred in predicates:
+        if pred.name == predicate.name and pred.args == predicate.args:
+           return pred
+    return False
         
 def contains_variables(condition):
     for term in condition.args:
         if is_var(term):
             return True
     return False
-        
-# def match_condition_recursive(precondition, bindings_list):
-
-#     pass
-    
-def get_param_index(param, parameters):
-    return parameters.index(param)
-
-def contains_predicate(predicates, predicate):
-    return predicate in predicates
 
 def ask(condition, predicates):
     
