@@ -54,12 +54,13 @@ def infer_precondition(predicates, precondition, bindings_list=[]):
         bindings_list = ask(condition, predicates)
         if bindings_list != False:
             total_list.append(bindings_list)
+            print(condition.name)
+            print(bindings_list)
+            print()
         else:
             return False
-
-    print(total_list)
-
     firstCondition = precondition[0]
+    
 
         
 

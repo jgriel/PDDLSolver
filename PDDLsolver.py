@@ -145,7 +145,6 @@ if __name__ == "__main__":
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
-    
     print("DOMAIN DICT:")
     print(domain_dict)
     print()
