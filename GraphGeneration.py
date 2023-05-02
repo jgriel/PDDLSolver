@@ -20,12 +20,15 @@ def expand(state, domain):
 
     actions = domain['actions']
 
-
     possible_actions = get_possible_actions(state, actions)
 
     for key in possible_actions:
-        for possibility in possible_actions[key]:
-            new_state = compute_action(possibility, actions[key], state)
+            print("KEY:", key)
+            for possibility in possible_actions[key]:
+                print("PARAMETERS: ", possibility)
+                print()
+                new_state = compute_action(possibility, get_domain_action(actions, key), state)
+            print()
 
 
 
@@ -33,11 +36,15 @@ def expand(state, domain):
 
     return
 
-
+def get_domain_action(actions, key):
+    for action in actions:
+        if action.name == key:
+            return action
+    return None
 
 def get_possible_actions(predicates, actions):
 
-    action_dict = dict
+    action_dict = dict()
     
     for act in actions:
         # print(act.name)
