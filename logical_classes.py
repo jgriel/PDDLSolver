@@ -322,7 +322,7 @@ class Bindings(object):
         """
         if self.bindings == []:
             return "No bindings"
-        return ", ".join((str(binding) for binding in self.bindings))
+        return ", ".join(((str(binding) + " : " + str(self.bindings_dict[binding])) for binding in self.bindings_dict))
 
     def __getitem__(self,key):
         """Define behavior for indexing, e.g. random_bindings[key] returns

@@ -22,19 +22,41 @@ def expand(state, domain):
 
     possible_actions = get_possible_actions(state, actions)
 
+    effect_list = []
     for key in possible_actions:
-            print("KEY:", key)
             for possibility in possible_actions[key]:
-                print("PARAMETERS: ", possibility)
-                print()
-                new_state = compute_action(possibility, get_domain_action(actions, key), state)
-            print()
+                print(possibility, "\n")
+                effect_list.append(compute_effect(possibility, get_domain_action(actions, key)))
 
+    state_list = generate_new_states(state, effect_list)
 
-
-
+    print()
+    print(state_to_string(state))
+    for state in state_list:
+        print(effect_to_string(state[0]) + " : \n" + state_to_string(state[1]))        
 
     return
+def effect_to_string(effect):
+    string = ""
+    for predicate in effect:
+        string += "(" + predicate.name
+        for arg in predicate.args:
+            string += " " + arg.term.element
+        string += ")"
+
+        if not predicate.value:
+            string = "(not (" + string + ")" 
+    return string
+
+
+def state_to_string(state):
+    string = ""
+    for predicate in state:
+        string += "(" + predicate.name
+        for arg in predicate.args:
+            string += " " + arg.term.element
+        string += ")\n"
+    return string
 
 def get_domain_action(actions, key):
     for action in actions:
@@ -47,7 +69,7 @@ def get_possible_actions(predicates, actions):
     action_dict = dict()
     
     for act in actions:
-        print(act.name)
+        # print(act.name)
         precondition = act.precondition
 
         filtered_predicates = filter_predicates(predicates, precondition)
@@ -63,8 +85,6 @@ def get_possible_actions(predicates, actions):
 
     return action_dict
 
-
-
 def get_bindings(predicates, precondition, bindings_list=[]):
     total_list = []
     for condition in precondition:
@@ -75,7 +95,6 @@ def get_bindings(predicates, precondition, bindings_list=[]):
             # print(condition.name)
             # print(bindings_list)
             # print()
-        print("IN GET BINDINGS: ", bindings_list)
 
     # print(total_list)
     
@@ -150,7 +169,6 @@ def ask(condition, predicates):
     else:
         return False
 
-
 def filter_predicates(predicates, precondition):
     names = []
     for condition in precondition:
@@ -171,6 +189,62 @@ def filter_objects(predicates):
                 objects.append(arg)
     return objects
 
-def compute_action(parameters, action, state):
-    pass
+def compute_effect(parameters, action):
+    bindings = Bindings()
 
+    precondition = action.precondition
+
+    for i in range(len(precondition)):
+        for j in range(len(precondition[i].args)):
+            # print("PRECONDITION:", precondition[i])
+            # print("PARAMETERS:" , parameters[i])
+            bindings.add_binding(precondition[i].args[j].term, parameters[i].args[j].term)
+
+    # print("New Action")
+    # print("Parameters: ", parameters)
+    # print()
+    # print("Precondition: ", precondition)
+    # print()
+    # print("Bindings: ", bindings)
+    # print()
+
+    effect = action.effect
+
+    new_effect = []
+    for predicate in effect:
+        new_effect.append(instantiate(predicate, bindings, predicate.value))
+    
+    # print("General Effect: ", effect)
+    # print()
+    # print("Computed Effect: ", new_effect)
+    # print()
+
+    return new_effect
+
+def generate_new_states(state, effects):
+    # print(state)
+    state_list = []
+    for effect in effects:
+        new_state = copy_state(state)
+        # print()
+        # print(effect)
+        for predicate in effect:
+            # print(predicate)
+            if predicate.value and not (predicate in state):
+                new_state.append(predicate)
+            elif not predicate.value and (predicate in state):
+                predicate.value = not predicate.value
+                new_state.remove(predicate)
+        
+        state_list.append((effect, new_state))
+
+    return state_list
+
+def copy_state(state):
+    new_state = []
+
+    for predicate in state:
+        new_state.append(predicate)
+
+    return new_state
+        
