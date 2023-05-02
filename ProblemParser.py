@@ -9,8 +9,9 @@ def parse_file(file_name):
     # Condense file of text into 1 line to rid of newline characters
     text = ""
     for line in problem_file:
-        line = line.strip()
-        text += line
+        if (len(line.strip()) > 0 and line.strip()[0] != ";"):
+            line = line.strip()
+            text += line
         
     text = text[1:-1]
     
