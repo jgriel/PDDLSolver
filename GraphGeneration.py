@@ -44,7 +44,12 @@ def get_possible_actions(predicates, actions):
 
         bindings_list = get_bindings(filtered_predicates, precondition)
 
-        match_conditions(precondition, bindings_list)
+        # match_conditions(precondition, bindings_list)
+        matched = match_conditions(precondition, bindings_list, predicates)
+
+        for match in matched:
+            print(match)
+            print()
 
 
 
@@ -63,13 +68,45 @@ def get_bindings(predicates, precondition, bindings_list=[]):
 
     return total_list
 
-def match_conditions(precondition, bindings_list):
-    if len(bindings_list) == 0:
-        return False            #False means no bindings
-
+def match_conditions(precondition, bindings_list, predicates):
+    # print("PRECONDITION:" , precondition)
+    if len(bindings_list) == 1:
+        new_preconditions = []
+        for binding in bindings_list[0]:
+            last_condition = instantiate(precondition[0], binding, precondition[0].value)
+            if last_condition in predicates:
+                if not contains_variables(last_condition):
+                    new_preconditions.append([last_condition])
+        if new_preconditions != []: 
+            return new_preconditions
+        else:
+            return False         #False means no bindings
+    possible_conditions = []
     for binding in bindings_list[0]:
-        print(binding)
-
+        first_precondition = instantiate(precondition[0], binding, precondition[0].value)
+        if first_precondition in predicates:
+            new_precondition = []
+            for condition in precondition[1:]:
+                new_precondition.append(instantiate(condition, binding, condition.value))
+            
+            bound_precondition_list = match_conditions(new_precondition, bindings_list[1:], predicates)
+            print("RECURSIVE CALL", bound_precondition_list)
+            if bound_precondition_list != False:
+                print(len(bound_precondition_list))
+                for bound_precondition in bound_precondition_list:
+                    bound_precondition.insert(0, first_precondition)
+                    possible_conditions.append(bound_precondition)
+    
+    # print()
+    # print()
+    # print(possible_conditions)
+    return possible_conditions
+        
+def contains_variables(condition):
+    for term in condition.args:
+        if is_var(term):
+            return True
+    return False
         
 # def match_condition_recursive(precondition, bindings_list):
 
@@ -77,6 +114,9 @@ def match_conditions(precondition, bindings_list):
     
 def get_param_index(param, parameters):
     return parameters.index(param)
+
+def contains_predicate(predicates, predicate):
+    return predicate in predicates
 
 def ask(condition, predicates):
     
