@@ -403,8 +403,6 @@ class ListOfBindings(object):
         string = ""
         for binding, associated_fact_rules in self.list_of_bindings:
             string += "Bindings for Predicates and Terms: " + str(binding) + "\n"
-            string += "Associated Statements ["
-            string += ", ".join((str(f) for f in associated_fact_rules)) + "]\n"
         return string
 
     def __len__(self):
