@@ -42,28 +42,38 @@ def get_possible_actions(predicates, actions):
 
         filtered_predicates = filter_predicates(predicates, precondition)
 
-        filtered_objects = filter_objects(filtered_predicates)
+        bindings_list = get_bindings(filtered_predicates, precondition)
 
-        infer_precondition(filtered_predicates, precondition)
-        # possible_parameters = itertools.permutations(filtered_objects, parameters)
-        possible_actions = []
+        match_conditions(precondition, bindings_list)
 
-def infer_precondition(predicates, precondition, bindings_list=[]):
+
+
+def get_bindings(predicates, precondition, bindings_list=[]):
     total_list = []
     for condition in precondition:
         bindings_list = ask(condition, predicates)
         if bindings_list != False:
             total_list.append(bindings_list)
+            print()
             print(condition.name)
             print(bindings_list)
             print()
         else:
             return False
-    firstCondition = precondition[0]
-    
+
+    return total_list
+
+def match_conditions(precondition, bindings_list):
+    if len(bindings_list) == 0:
+        return False            #False means no bindings
+
+    for binding in bindings_list[0]:
+        print(binding)
 
         
+# def match_condition_recursive(precondition, bindings_list):
 
+#     pass
     
 def get_param_index(param, parameters):
     return parameters.index(param)
