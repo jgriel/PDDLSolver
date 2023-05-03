@@ -33,30 +33,9 @@ def expand(state, domain):
     print()
     print(state_to_string(state))
     for state in state_list:
-        print(effect_to_string(state[0]) + " : \n" + state_to_string(state[1]))        
+        print(effect_to_string(state[0]) + ": \n" + state_to_string(state[1]))        
 
     return
-def effect_to_string(effect):
-    string = ""
-    for predicate in effect:
-        string += "(" + predicate.name
-        for arg in predicate.args:
-            string += " " + arg.term.element
-        string += ")"
-
-        if not predicate.value:
-            string = "(not (" + string + ")" 
-    return string
-
-
-def state_to_string(state):
-    string = ""
-    for predicate in state:
-        string += "(" + predicate.name
-        for arg in predicate.args:
-            string += " " + arg.term.element
-        string += ")\n"
-    return string
 
 def get_domain_action(actions, key):
     for action in actions:
@@ -149,12 +128,6 @@ def get_predicate(predicate, predicates):
            return pred
     return False
         
-def contains_variables(condition):
-    for term in condition.args:
-        if is_var(term):
-            return True
-    return False
-
 def ask(condition, predicates):
     
     bindingsList = ListOfBindings()
@@ -180,14 +153,6 @@ def filter_predicates(predicates, precondition):
             filtered.append(predicate)
 
     return filtered
-
-def filter_objects(predicates):
-    objects = []
-    for predicate in predicates:
-        for arg in predicate.args:
-            if arg not in objects:
-                objects.append(arg)
-    return objects
 
 def compute_effect(parameters, action):
     bindings = Bindings()
@@ -230,15 +195,23 @@ def generate_new_states(state, effects):
         # print(effect)
         for predicate in effect:
             # print(predicate)
-            if predicate.value and not (predicate in state):
+            if predicate.value and (not (predicate in state)):
                 new_state.append(predicate)
-            elif not predicate.value and (predicate in state):
+            elif (not predicate.value) and (get_predicate(predicate, state)):
                 predicate.value = not predicate.value
+                print(predicate)
                 new_state.remove(predicate)
+                predicate.value = not predicate.value
         
         state_list.append((effect, new_state))
 
     return state_list
+
+def contains_variables(condition):
+    for term in condition.args:
+        if is_var(term):
+            return True
+    return False
 
 def copy_state(state):
     new_state = []
@@ -247,4 +220,27 @@ def copy_state(state):
         new_state.append(predicate)
 
     return new_state
-        
+
+def effect_to_string(effect):
+    string = ""
+    for predicate in effect:
+        if not predicate.value:
+            string += "(not " + predicate_to_string(predicate) + ") "
+        else:
+            string += predicate_to_string(predicate) + " "
+    return string.strip()
+
+def predicate_to_string(predicate):
+    string = "(" + predicate.name
+    for arg in predicate.args:
+            string += " " + arg.term.element
+    string += ")"
+
+    return string
+
+def state_to_string(state):
+    string = ""
+    for predicate in state:
+        string += predicate_to_string(predicate) + "\n"
+    return string
+
