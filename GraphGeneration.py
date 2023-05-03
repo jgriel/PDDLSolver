@@ -121,13 +121,7 @@ def match_conditions(precondition, bindings_list, predicates):
                         possible_conditions.append(bound_precondition)
     
     return possible_conditions
-
-def get_predicate(predicate, predicates):
-    for pred in predicates:
-        if pred.name == predicate.name and pred.args == predicate.args:
-           return pred
-    return False
-        
+      
 def ask(condition, predicates):
     
     bindingsList = ListOfBindings()
@@ -206,6 +200,13 @@ def generate_new_states(state, effects):
         state_list.append((effect, new_state))
 
     return state_list
+
+
+def get_predicate(predicate, predicates):
+    for pred in predicates:
+        if pred.name == predicate.name and pred.args == predicate.args:
+           return pred
+    return False
 
 def contains_variables(condition):
     for term in condition.args:
