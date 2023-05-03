@@ -29,11 +29,12 @@
           
           (in-room allison room1)
           (in-room nomar room1)
+          (in-room noah room1)
           (in-room ramon room1)
           (in-room julia room1)
           (in-room raj room1)
-          (in-room noah room1)
           (in-room oliver room2)
+          (in-room naomi room2) 
           (in-room irina room2)
           (in-room jason room2)
           (in-room angelo room2)

@@ -11,7 +11,7 @@
 		     (not (has-ball ?from))))
 		     
     (:action move
-        :parameters (?from ?to ?person)
-        :precondition (and (in-room ?person ?from) (not (in-room ?person ?to)))
+        :parameters (?person ?from ?to)
+        :precondition (and (in-room ?person ?from))
         :effect (and (in-room ?person ?to) (not (in-room ?person ?from))))
     )

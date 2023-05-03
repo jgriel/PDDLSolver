@@ -295,7 +295,7 @@ class Binding(object):
     def __str__(self):
         """Define external representation when printed
         """
-        return self.variable.element.upper() + " : " + self.constant.element
+        return self.variable.term.element.upper() + " : " + self.constant.term.element
 
 class Bindings(object):
     """Represents Binding(s) used while matching two statements
