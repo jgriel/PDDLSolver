@@ -13,8 +13,8 @@ def expand(state, domain):
         domain: The representation of the domain file with all of the actions and predicates.
 
     Returns:
-        list of states that are able to be reached from the current state
-        with one action taken
+        list of tuples, that are the action name with the parameters and the state that is reach with
+        that action taken
 
     """
 
@@ -25,7 +25,8 @@ def expand(state, domain):
     effect_list = []
     for key in possible_actions:
             for possibility in possible_actions[key]:
-                print(possibility, "\n")
+                # print("possibility:")
+                # print(possibility, "\n")
                 effect_list.append(compute_effect(possibility, get_domain_action(actions, key)))
 
     state_list = generate_new_states(state, effect_list)
@@ -33,16 +34,12 @@ def expand(state, domain):
     print()
     print(state_to_string(state))
     for state in state_list:
-        print(effect_to_string(state[0]) + ": \n" + state_to_string(state[1]))        
+        print(action_params_to_string(state[0]) + ": \n" + state_to_string(state[1]))        
 
-    return
+    # print(state_list)
+    return state_list
 
-def get_domain_action(actions, key):
-    for action in actions:
-        if action.name == key:
-            return action
-    return None
-
+#Get Binding Methods
 def get_possible_actions(predicates, actions):
 
     action_dict = dict()
@@ -136,18 +133,8 @@ def ask(condition, predicates):
     else:
         return False
 
-def filter_predicates(predicates, precondition):
-    names = []
-    for condition in precondition:
-        names.append(condition.name)
-    
-    filtered = []
-    for predicate in predicates:
-        if predicate.name in names:
-            filtered.append(predicate)
 
-    return filtered
-
+# Effect Methods
 def compute_effect(parameters, action):
     bindings = Bindings()
 
@@ -169,6 +156,12 @@ def compute_effect(parameters, action):
 
     effect = action.effect
 
+    params = action.parameters
+    input = [action.name]
+    for param in params:
+        input.append(bindings[param.term.element])
+
+
     new_effect = []
     for predicate in effect:
         new_effect.append(instantiate(predicate, bindings, predicate.value))
@@ -178,7 +171,7 @@ def compute_effect(parameters, action):
     # print("Computed Effect: ", new_effect)
     # print()
 
-    return new_effect
+    return (input, new_effect)
 
 def generate_new_states(state, effects):
     # print(state)
@@ -186,21 +179,39 @@ def generate_new_states(state, effects):
     for effect in effects:
         new_state = copy_state(state)
         # print()
-        # print(effect)
-        for predicate in effect:
+        # print(effect[1])
+        for predicate in effect[1]:
             # print(predicate)
             if predicate.value and (not (predicate in state)):
                 new_state.append(predicate)
             elif (not predicate.value) and (get_predicate(predicate, state)):
                 predicate.value = not predicate.value
-                print(predicate)
+                # print(predicate)
                 new_state.remove(predicate)
                 predicate.value = not predicate.value
         
-        state_list.append((effect, new_state))
+        state_list.append((effect[0], new_state))
 
     return state_list
 
+#Helper Methods....
+def get_domain_action(actions, key):
+    for action in actions:
+        if action.name == key:
+            return action
+    return None
+
+def filter_predicates(predicates, precondition):
+    names = []
+    for condition in precondition:
+        names.append(condition.name)
+    
+    filtered = []
+    for predicate in predicates:
+        if predicate.name in names:
+            filtered.append(predicate)
+
+    return filtered
 
 def get_predicate(predicate, predicates):
     for pred in predicates:
@@ -222,6 +233,18 @@ def copy_state(state):
 
     return new_state
 
+def state_to_string(state):
+    string = ""
+    for predicate in state:
+        string += predicate_to_string(predicate) + "\n"
+    return string
+
+def action_params_to_string(effect):
+    string = "(" + str(effect[0])
+    for predicate in effect[1:]:
+            string += " " + str(predicate)
+    return string + ")" 
+
 def effect_to_string(effect):
     string = ""
     for predicate in effect:
@@ -238,10 +261,3 @@ def predicate_to_string(predicate):
     string += ")"
 
     return string
-
-def state_to_string(state):
-    string = ""
-    for predicate in state:
-        string += predicate_to_string(predicate) + "\n"
-    return string
-
