@@ -13,7 +13,7 @@ action - action taken to get to this state
 
 '''
 class State_Node:
-    def __init__(self, state, totalDistance, aTobDistance, parent = None, action = None):
+    def __init__(self, state, totalDistance = 0, aTobDistance = 0, parent = None, action = None):
         self.totalDistance = totalDistance # f_n 
         self.state = state
         self.aTobDistance = aTobDistance # g_n
@@ -55,7 +55,7 @@ def depth_first_search(initial_state, goal_state, domain):
 Pick the state with the best hueristic 
 '''
 def greedy_best_first_search(initial_state, goal_state, domain):
-    cur_state = State_Node(initial_state, 0, 0, None, None)
+    cur_state = State_Node(initial_state)
     visited = []
 
     pass
