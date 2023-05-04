@@ -12,6 +12,6 @@
 		     
     (:action move
         :parameters (?person ?from ?to)
-        :precondition (and (in-room ?person ?from))
+        :precondition (and (in-room ?person ?from) (not (in-room ?person ?to)))
         :effect (and (in-room ?person ?to) (not (in-room ?person ?from))))
     )
