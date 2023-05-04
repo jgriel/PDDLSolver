@@ -1,6 +1,7 @@
 import sys
 import queue
 import DomainParser, ProblemParser, GraphGeneration
+import time
 
 # Use a visited
 '''
@@ -37,6 +38,9 @@ class State_Node:
         return (self.totalDistance, self.aTobDistance) < (other.totalDistance, other.aTobDistance)
 
     def __eq__(self, other):
+        if (other == None):
+            return False
+
         for element in self.state:
             if element not in other.state:
                 return False
@@ -44,9 +48,36 @@ class State_Node:
         return True
 
 def breadth_first_search(initial_state, goal_state, domain, problem):
-    q = queue.Queue()
+    cur_state = State_Node(initial_state)
+    cur_state.totalDistance = heuristic(cur_state.state, goal_state)
+    visited_list = []
+    state_queue = queue.Queue()
+    state_queue.put(cur_state)
 
-    pass
+
+    while (not state_queue.empty()):
+        cur_state = state_queue.get()
+        # if cur has not been visited then we can check it and expand it
+        if not in_visited(cur_state.state, visited_list):
+            if goal_check(cur_state.state, goal_state):
+                # return the list of actions from start to goal
+                return solve_path(cur_state)
+  
+            # add to visited list
+            visited_list.append(cur_state.state)
+
+            # print(cur_state)
+
+            expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+            for state in expansion:
+                new_state = State_Node(state[1])
+                new_state.totalDistance = heuristic(state, goal_state)
+                new_state.parent = cur_state
+                new_state.action = state[0]
+                state_queue.put(new_state)
+
+    # indicates no solution
+    return []
 
 
 def depth_first_search(initial_state, goal_state, domain, problem):
@@ -80,7 +111,9 @@ def greedy_best_first_search(initial_state, goal_state, domain, problem):
         # if cur has not been visited then we can check it and expand it
         if not in_visited(cur_state.state, visited_list):
             if goal_check(cur_state.state, goal_state):
-                return True
+                # return the list of actions from start to goal
+                return solve_path(cur_state)
+  
             # add to visited list
             visited_list.append(cur_state.state)
 
@@ -92,23 +125,11 @@ def greedy_best_first_search(initial_state, goal_state, domain, problem):
                 new_state.totalDistance = heuristic(state, goal_state)
                 new_state.parent = cur_state
                 new_state.action = state[0]
-                print(new_state.action)
-                print()
-                print()
                 state_queue.put(new_state)
-                # print_state(new_state.state)
-                # print()
-                # print()
-            while not state_queue.empty():
-                s = state_queue.get()
-                print(s.totalDistance)
-                pretty_print_state(s.state)
-                print()
-            return False
+    
+    # indicates no solution path
+    return []
 
-
-    # x = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
-    # cur_state.state = x[0][1]
 
             
     # while cur_state.state not in visited
@@ -116,11 +137,10 @@ def greedy_best_first_search(initial_state, goal_state, domain, problem):
 '''
 takes in state of the node ... state_node.state
 '''
-def pretty_print_state(state):
-    print("STATE:")
-
-    for s in state:
-        print(s)
+def pretty_print_list(input_list):
+    print("Pretty Print:")
+    for element in input_list:
+        print(element)
    
 '''
 Find the state that will get you to goal in shortest path
@@ -204,6 +224,19 @@ def goal_check(cur_state, goal_state):
     
     return True
 
+
+def solve_path(cur_state):
+    actions_to_goal = [cur_state.action]
+    while cur_state.parent != None:
+        cur_state = cur_state.parent
+        actions_to_goal.insert(0, cur_state.action)
+
+    # remove the None that is added from the start state because it has no actions to get to it
+    actions_to_goal.pop(0)
+
+    return actions_to_goal
+
+
 def heuristic(cur_state, goal_state):
     # count number of missing values in goal state compared to cur state
     minimum_moves_remaining = 0
@@ -224,9 +257,13 @@ if __name__ == "__main__":
     
     
     # print(heuristic(problem_dict["init"], problem_dict["goal"]))
-    greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
-    breadth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
-    depth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
+    start = time.time()
+    greedy_solution = greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
+    end = time.time()
+    print("Runtime:", end - start)
+    pretty_print_list(greedy_solution)
+    # breadth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
+    # depth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
