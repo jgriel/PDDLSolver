@@ -78,19 +78,26 @@ def breadth_first_search(initial_state, goal_state, domain, problem):
 
 
 def depth_first_search(initial_state, goal_state, domain, problem):
-    stack = []
-    # print("INIT:", initial_state[0], "\n")
-    # print("GOAL:", goal_state, "\n")
-    # print("DOMAIN:", domain.keys(), "\n")
-    # print("PROBLEM:", problem.keys(), "\n")
-    
+    stack = []    
+    visited = []
     cur_state = State_Node(initial_state)
-    visited = [cur_state.state]
-    expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
-    # print("1st EXPAND:", expansion[1], "\n")
+    stack.append(cur_state)
     
-    pass
+    while len(stack) != 0:
+        cur_state = stack.pop()
+        if not in_visited(cur_state.state, visited):
+            visited.append(cur_state.state)
+            if goal_check(cur_state.state, goal_state):
+                return solve_path(cur_state)
+            else:
+                expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+                for item in expansion:
+                    state = State_Node(item[1])
+                    state.parent = cur_state
+                    state.action = item[0]
+                    stack.append(state)
 
+    return []
 
 '''
 Pick the state with the best hueristic 
@@ -266,7 +273,6 @@ if __name__ == "__main__":
     # end = time.time()
     # print("A* Search Runtime:", end - start)
     # pretty_print_list(a_star_search_solution)
-    
     
     # print("DOMAIN DICT:")
     # print(domain_dict)
