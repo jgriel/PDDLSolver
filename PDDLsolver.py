@@ -150,40 +150,40 @@ def pretty_print_list(input_list):
 Find the state that will get you to goal in shortest path
 We assume moveing from one state to the next is just a cost of 1 so we do not need a cost_map just a huerstic to estimate the cost
 '''
-def a_star_search(initial_state, goal_state, domain, problem):
-	path = []
-	
-	visited_list = []
-	state_queue = queue.PriorityQueue()
-	cur_state = State_Node(initial_state)
-	
-	# add initial state to fringe
-	state_queue.put(cur_state)
+def a_star_search(initial_state, goal_state, domain, problem):	
+    visited_list = []
+    state_queue = queue.PriorityQueue()
+    cur_state = State_Node(initial_state)
+    cur_state.totalDistance = heuristic(cur_state.state, goal_state)
 
-	while(not state_queue.empty()):
-		# choose node to examine from fringe
-		cur_state = state_queue.get()
-		
-		# if curr is not closed
-		if not in_visited(cur_state.state, visited_list):
-			# 	answer found if goal state
-			if goal_check(cur_state.state, goal_state):
-				return solve_path(cur_state)
-		
-			# 	keep exapnding
-			else:
-				expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
-				for item in expansion:
-					h_n = heuristic(item[1], goal_state)
-					g_n = cur_state.aTobDistance + 1
-					totalDistance = g_n + h_n 
-					# new node to add to queue
-					new_state = State_Node(item[1], totalDistance, h_n, cur_state, item[1])
-					state_queue.put(new_state)
-			
-			visited_list.add(cur_state.landmark)
-				
-	return []
+
+	# add initial state to fringe
+    state_queue.put(cur_state)
+
+    while(not state_queue.empty()):
+        # choose node to examine from fringe
+        cur_state = state_queue.get()
+        
+        # if curr is not closed
+        if not in_visited(cur_state.state, visited_list):
+            # 	answer found if goal state
+            if goal_check(cur_state.state, goal_state):
+                return solve_path(cur_state)
+        
+            # 	keep exapnding
+            else:
+                expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+                for item in expansion:
+                    h_n = heuristic(item[1], goal_state)
+                    g_n = cur_state.aTobDistance + 1
+                    totalDistance = g_n + h_n 
+                    # new node to add to queue
+                    new_state = State_Node(item[1], totalDistance, h_n, cur_state, item[0])
+                    state_queue.put(new_state)
+            
+            visited_list.append(cur_state.state)
+                
+    return []
 
 '''
 This function returns true if the cur state is in visited list and false if it is not
@@ -247,33 +247,36 @@ if __name__ == "__main__":
 
     domain_dict = DomainParser.parse_file(domain_file)
     problem_dict = ProblemParser.parse_file(problem_file)
-    
-    
-    # print(heuristic(problem_dict["init"], problem_dict["goal"]))
-    # start = time.time()
-    # greedy_solution = greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
-    # end = time.time()
-    # print("Greedy Best First Search Runtime:", end - start)
-    # pretty_print_list(greedy_solution)
+
 
     start = time.time()
     bfs_solution = breadth_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
     end = time.time()
     print("BFS Runtime:", end - start)
     pretty_print_list(bfs_solution)
+    print()
 
-    # start = time.time()
-    # dfs_solution = depth_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
-    # end = time.time()
-    # print("DFS Runtime:", end - start)
-    # pretty_print_list(dfs_solution)
+    start = time.time()
+    dfs_solution = depth_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
+    end = time.time()
+    print("DFS Runtime:", end - start)
+    pretty_print_list(dfs_solution)
+    print()
 
-    # start = time.time()
-    # a_star_search_solution = a_star_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
-    # end = time.time()
-    # print("A* Search Runtime:", end - start)
-    # pretty_print_list(a_star_search_solution)
-    
+    start = time.time()
+    greedy_solution = greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
+    end = time.time()
+    print("Greedy Best First Search Runtime:", end - start)
+    pretty_print_list(greedy_solution)
+    print()
+
+    start = time.time()
+    a_star_search_solution = a_star_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
+    end = time.time()
+    print("A* Search Runtime:", end - start)
+    pretty_print_list(a_star_search_solution)
+    print()
+
     # print("DOMAIN DICT:")
     # print(domain_dict)
     # print()
