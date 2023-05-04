@@ -44,6 +44,7 @@ class State_Node:
         return True
 
 def breadth_first_search(initial_state, goal_state, domain, problem):
+    q = queue.Queue()
 
     pass
 
