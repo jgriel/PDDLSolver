@@ -44,10 +44,23 @@ class State_Node:
         return True
 
 def breadth_first_search(initial_state, goal_state, domain, problem):
+    q = queue.Queue()
+
     pass
 
 
 def depth_first_search(initial_state, goal_state, domain, problem):
+    stack = []
+    # print("INIT:", initial_state[0], "\n")
+    # print("GOAL:", goal_state, "\n")
+    # print("DOMAIN:", domain.keys(), "\n")
+    # print("PROBLEM:", problem.keys(), "\n")
+    
+    cur_state = State_Node(initial_state)
+    visited = [cur_state.state]
+    expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+    # print("1st EXPAND:", expansion[1], "\n")
+    
     pass
 
 
@@ -212,6 +225,8 @@ if __name__ == "__main__":
     
     # print(heuristic(problem_dict["init"], problem_dict["goal"]))
     greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
+    breadth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
+    depth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
