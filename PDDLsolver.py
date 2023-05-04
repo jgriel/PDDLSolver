@@ -85,13 +85,32 @@ def depth_first_search(initial_state, goal_state, domain, problem):
     # print("INIT:", initial_state[0], "\n")
     # print("GOAL:", goal_state, "\n")
     # print("DOMAIN:", domain.keys(), "\n")
-    # print("PROBLEM:", problem.keys(), "\n")
+    # print("PROBLEM:", problem["goal"], "\n")
     
     cur_state = State_Node(initial_state)
     visited = [cur_state.state]
+    goal = None
     expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
-    # print("1st EXPAND:", expansion[1], "\n")
+    # pretty_print_state(expansion[0][1])
+    # print("1st EXPAND:", expansion[0], "\n")
     
+    for item in expansion:
+        stack.append(State_Node(item[1]))
+    
+    while len(stack) != 0:
+        cur_state = stack.pop()
+        print("TEST:", cur_state)
+        if not in_visited(cur_state, visited):
+            visited.append(cur_state[1])
+            if goal_check(cur_state[1], goal_state):
+                goal = cur_state
+            else:
+                expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+                for item in expansion:
+                    stack.append(item)
+        
+    
+        
     pass
 
 
