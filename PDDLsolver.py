@@ -81,38 +81,26 @@ def breadth_first_search(initial_state, goal_state, domain, problem):
 
 
 def depth_first_search(initial_state, goal_state, domain, problem):
-    stack = []
-    # print("INIT:", initial_state[0], "\n")
-    # print("GOAL:", goal_state, "\n")
-    # print("DOMAIN:", domain.keys(), "\n")
-    # print("PROBLEM:", problem["goal"], "\n")
-    
+    stack = []    
+    visited = []
     cur_state = State_Node(initial_state)
-    visited = [cur_state.state]
-    goal = None
-    expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
-    # pretty_print_state(expansion[0][1])
-    # print("1st EXPAND:", expansion[0], "\n")
-    
-    for item in expansion:
-        stack.append(State_Node(item[1]))
+    stack.append(cur_state)
     
     while len(stack) != 0:
         cur_state = stack.pop()
-        print("TEST:", cur_state)
-        if not in_visited(cur_state, visited):
-            visited.append(cur_state[1])
-            if goal_check(cur_state[1], goal_state):
-                goal = cur_state
+        if not in_visited(cur_state.state, visited):
+            visited.append(cur_state.state)
+            if goal_check(cur_state.state, goal_state):
+                return solve_path(cur_state)
             else:
                 expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
                 for item in expansion:
-                    stack.append(item)
-        
-    
-        
-    pass
+                    state = State_Node(item[1])
+                    state.parent = cur_state
+                    state.action = item[0]
+                    stack.append(state)
 
+    return []
 
 '''
 Pick the state with the best hueristic 
@@ -282,7 +270,7 @@ if __name__ == "__main__":
     print("Runtime:", end - start)
     pretty_print_list(greedy_solution)
     # breadth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
-    # depth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict)
+    print(depth_first_search(problem_dict['state'], problem_dict['goal'], domain_dict, problem_dict))
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
