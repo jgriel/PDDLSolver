@@ -38,16 +38,16 @@ def expand(objects, state, domain):
 
     state_list = generate_new_states(state, effect_list)
 
-    print("ORIGINAL STATE")
-    print(state_to_string(state))
-    print()
-    for state in state_list:
-        print("NEW STATE:")
-        print(action_params_to_string(state[0]) + ": \n" + state_to_string(state[1]))
-        print()      
+    # print("ORIGINAL STATE")
+    # print(state_to_string(state))
+    # print()
+    # for state in state_list:
+    #     print("NEW STATE:")
+    #     print(action_params_to_string(state[0]) + ": \n" + state_to_string(state[1]))
+    #     print()      
 
-    print(len(state_list))
-    print(len(objects))
+    # print(len(state_list))
+    # print(len(objects))
     return state_list
 
 #Get Binding Methods

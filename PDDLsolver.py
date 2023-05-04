@@ -56,17 +56,59 @@ Pick the state with the best hueristic
 '''
 def greedy_best_first_search(initial_state, goal_state, domain, problem):
     cur_state = State_Node(initial_state)
-    visited = [cur_state.state]
-    x = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
-    cur_state.state = x[0][1]
-    visited.append(cur_state.state)
-    # print(in_visited(cur_state.state, visited))
+    cur_state.totalDistance = heuristic(cur_state.state, goal_state)
+    visited_list = []
+    state_queue = queue.PriorityQueue()
+    state_queue.put(cur_state)
+
+
+    while (not state_queue.empty()):
+        cur_state = state_queue.get()
+        # if cur has not been visited then we can check it and expand it
+        if not in_visited(cur_state.state, visited_list):
+            if goal_check(cur_state.state, goal_state):
+                return True
+            # add to visited list
+            visited_list.append(cur_state.state)
+
+            # print(cur_state)
+
+            expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+            for state in expansion:
+                new_state = State_Node(state[1])
+                new_state.totalDistance = heuristic(state, goal_state)
+                new_state.parent = cur_state
+                new_state.action = state[0]
+                print(new_state.action)
+                print()
+                print()
+                state_queue.put(new_state)
+                # print_state(new_state.state)
+                # print()
+                # print()
+            while not state_queue.empty():
+                s = state_queue.get()
+                print(s.totalDistance)
+                pretty_print_state(s.state)
+                print()
+            return False
+
+
+    # x = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+    # cur_state.state = x[0][1]
+
+            
     # while cur_state.state not in visited
 
+'''
+takes in state of the node ... state_node.state
+'''
+def pretty_print_state(state):
+    print("STATE:")
 
-    pass
-
-
+    for s in state:
+        print(s)
+   
 '''
 Find the state that will get you to goal in shortest path
 We assume moveing from one state to the next is just a cost of 1 so we do not need a cost_map just a huerstic to estimate the cost
