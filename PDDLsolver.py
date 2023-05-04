@@ -37,7 +37,11 @@ class State_Node:
         return (self.totalDistance, self.aTobDistance) < (other.totalDistance, other.aTobDistance)
 
     def __eq__(self, other):
-        return self.state == other.state
+        for element in self.state:
+            if element not in other.state:
+                return False
+
+        return True
 
 def breadth_first_search(initial_state, goal_state, domain):
     pass
@@ -110,7 +114,7 @@ def a_star_search(initial_state, goal_state, domain):
     pass
 
 '''
-cur_state - list of predicates representing the current state
+cur_state - list of predicates representing the current state... State_Node.state
 goa_State - list of predicates included in the goal state
 '''
 def goal_check(cur_state, goal_state):
