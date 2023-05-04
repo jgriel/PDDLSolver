@@ -43,20 +43,26 @@ class State_Node:
 
         return True
 
-def breadth_first_search(initial_state, goal_state, domain):
+def breadth_first_search(initial_state, goal_state, domain, problem):
     pass
 
 
-def depth_first_search(initial_state, goal_state, domain):
+def depth_first_search(initial_state, goal_state, domain, problem):
     pass
 
 
 '''
 Pick the state with the best hueristic 
 '''
-def greedy_best_first_search(initial_state, goal_state, domain):
+def greedy_best_first_search(initial_state, goal_state, domain, problem):
     cur_state = State_Node(initial_state)
-    visited = []
+    visited = [cur_state.state]
+    x = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+    cur_state.state = x[0][1]
+    visited.append(cur_state.state)
+    # print(in_visited(cur_state.state, visited))
+    # while cur_state.state not in visited
+
 
     pass
 
@@ -65,7 +71,7 @@ def greedy_best_first_search(initial_state, goal_state, domain):
 Find the state that will get you to goal in shortest path
 We assume moveing from one state to the next is just a cost of 1 so we do not need a cost_map just a huerstic to estimate the cost
 '''
-def a_star_search(initial_state, goal_state, domain):
+def a_star_search(initial_state, goal_state, domain, problem):
 	# path = []
 	
 	# visited = set()
@@ -114,6 +120,24 @@ def a_star_search(initial_state, goal_state, domain):
     pass
 
 '''
+This function returns true if the cur state is in visited list and false if it is not
+visited_list = list of visited states
+cur_state = current state ... cur_state.state
+'''
+def in_visited(cur_state, visited_list):
+    for state in visited_list:
+        in_state = True
+        for predicate in cur_state:
+            if predicate not in state:
+                in_state = False
+                break
+    
+        if in_state:
+            return True
+
+    return False
+
+'''
 cur_state - list of predicates representing the current state... State_Node.state
 goa_State - list of predicates included in the goal state
 '''
@@ -145,7 +169,7 @@ if __name__ == "__main__":
     
     
     # print(heuristic(problem_dict["init"], problem_dict["goal"]))
-    greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict)
+    greedy_best_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
     # how to call search function
     # depth_first_search(problem_dict["init"], problem_dict["goal"])
     
@@ -157,4 +181,4 @@ if __name__ == "__main__":
     # print(problem_dict)
     # print()
     
-    GraphGeneration.expand(problem_dict['objects'], problem_dict['state'], domain_dict)
+    # GraphGeneration.expand(problem_dict['objects'], problem_dict['state'], domain_dict)
