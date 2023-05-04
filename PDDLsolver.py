@@ -54,7 +54,7 @@ def breadth_first_search(initial_state, goal_state, domain, problem):
     state_queue = queue.Queue()
     state_queue.put(cur_state)
 
-
+    count = 0
     while (not state_queue.empty()):
         cur_state = state_queue.get()
         # if cur has not been visited then we can check it and expand it
@@ -76,7 +76,12 @@ def breadth_first_search(initial_state, goal_state, domain, problem):
                 new_state.parent = cur_state
                 new_state.action = state[0]
                 state_queue.put(new_state)
-
+        # count += 1
+        # print("current state")
+        # for state in cur_state.state:
+        #     print(state)
+        # if count == 50:
+        #     return []
     # indicates no solution
     return []
 
@@ -148,7 +153,7 @@ takes in state of the node ... state_node.state
 def pretty_print_list(input_list):
     print("Pretty Print:")
     for element in input_list:
-        print(element)
+        print(GraphGeneration.action_params_to_string(element))
    
 '''
 Find the state that will get you to goal in shortest path
@@ -252,6 +257,14 @@ if __name__ == "__main__":
     domain_dict = DomainParser.parse_file(domain_file)
     problem_dict = ProblemParser.parse_file(problem_file)
 
+    # print("DOMAIN DICT:")
+    # print(domain_dict)
+    # pretty_print_list(domain_dict["actions"])
+    # print()
+    # print("PROBLEM DICT")
+    # print(problem_dict)
+    # print()
+    # pretty_print_list(problem_dict["state"])
 
     start = time.time()
     bfs_solution = breadth_first_search(problem_dict["state"], problem_dict["goal"], domain_dict, problem_dict)
@@ -281,13 +294,5 @@ if __name__ == "__main__":
     pretty_print_list(a_star_search_solution)
     print()
 
-    # print("DOMAIN DICT:")
-    # print(domain_dict)
-    # pretty_print_list(domain_dict["actions"])
-    # print()
-    # print("PROBLEM DICT")
-    # print(problem_dict)
-    # print()
-    # pretty_print_list(problem_dict["state"])
     
     # GraphGeneration.expand(problem_dict['objects'], problem_dict['state'], domain_dict)

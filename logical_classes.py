@@ -401,7 +401,7 @@ class ListOfBindings(object):
         """Define external representation when printed
         """
         string = ""
-        for binding, associated_fact_rules in self.list_of_bindings:
+        for binding in self.list_of_bindings:
             string += "Bindings for Predicates and Terms: " + str(binding) + "\n"
         return string
 

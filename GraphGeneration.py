@@ -19,6 +19,9 @@ def expand(objects, state, domain):
     """
     actions = domain['actions']
 
+    # for act in actions:
+    #     print(act, "\n")
+
     possible_actions = get_possible_actions(state, actions)
 
     # print(objects)
@@ -27,14 +30,26 @@ def expand(objects, state, domain):
     for key in possible_actions:
             for possibility in possible_actions[key]:
                 # print("possibility:")
-                # print(possibility, "\n")
-                next_effect = compute_effect(possibility, get_domain_action(actions, key))
-                if contains_unbound_parameters(next_effect[0]):
-                    additional_effects = compute_additional_effects(objects, next_effect[0][1:], next_effect, get_domain_action(actions, key))
-                    for additional_effect in additional_effects:
-                        effect_list.append(additional_effect)
-                else:
-                    effect_list.append(compute_effect(possibility, get_domain_action(actions, key)))
+                # print(key, effect_to_string(possibility), "\n")
+                # print(len(possibility), len(get_domain_action(actions, key).parameters))
+                valid = True
+                
+                for item in possibility:
+                    if possibility.count(item) > 1:
+                        valid = False
+                        break
+
+                if valid:
+                    next_effect = compute_effect(possibility, get_domain_action(actions, key))
+                    if contains_unbound_parameters(next_effect[0]):
+                        additional_effects = compute_additional_effects(objects, next_effect[0][1:], next_effect, get_domain_action(actions, key))
+                        for additional_effect in additional_effects:
+                            effect_list.append(additional_effect)
+                    else:
+                        effect_list.append(compute_effect(possibility, get_domain_action(actions, key)))
+    
+    # for effect in effect_list:
+    #     print(action_params_to_string(effect[0]))
 
     state_list = generate_new_states(state, effect_list)
 
@@ -56,17 +71,20 @@ def get_possible_actions(predicates, actions):
     action_dict = dict()
     
     for act in actions:
-        # print(act.name)
+        # print("\n", act.name)
         precondition = act.precondition
 
         filtered_predicates = filter_predicates(predicates, precondition)
 
         bindings_list = get_bindings(filtered_predicates, precondition)
-
+        # for binding in bindings_list:
+        #     print(binding)
+        # print()
         matched = match_conditions(precondition, bindings_list, predicates)
-            
+        # print(act.name)
+        # print(effect_to_string(act.precondition))
         # for match in matched:
-        #     print(match)
+        #     print(effect_to_string(match))
         #     print()
         action_dict[act.name] = matched
 
@@ -88,46 +106,61 @@ def get_bindings(predicates, precondition, bindings_list=[]):
     return total_list
 
 def match_conditions(precondition, bindings_list, predicates):
-    # print("PRECONDITION:" , precondition)
+    # print("\nPRECONDITION:" , effect_to_string(precondition))
     if len(bindings_list) == 1:
         new_preconditions = []
-        for binding in bindings_list[0]:
-            last_condition = instantiate(precondition[0], binding, precondition[0].value)
+        last_condition = precondition[0]
+        # print(len(precondition))
+        if not contains_variables(last_condition):
             contained = get_predicate(last_condition, predicates)
-
-            if not contained:
-                valid = (last_condition.value == False)
-            else:
-                valid = (contained.value == last_condition.value)
-
-            if valid and not contains_variables(last_condition):
-                    new_preconditions.append([last_condition])
+            # print("BASE CASE:", contained, "Condition", last_condition)
+            # print("\nInstantiated Condition: ", effect_to_string([last_condition]))
+            valid = True
+            if contained == False:
+                valid = not last_condition.value
+            if valid:
+                return [precondition]
+        else:
+            for binding in bindings_list[0]:
+                if contains_variables(last_condition):
+                    last_condition = instantiate(last_condition, binding, last_condition.value)
+                else:
+                    last_condition = last_condition
+                contained = get_predicate(last_condition, predicates)
+                # print("BASE CASE:", contained, "Condition", last_condition)
+                # print("\nInstantiated Condition: ", effect_to_string([last_condition]))
+                valid = True
+                if contained == False:
+                    valid = not last_condition.value
+                if valid and (not contains_variables(last_condition)):
+                        new_preconditions.append([last_condition])
         if new_preconditions != []: 
             return new_preconditions
         else:
             return False         #False means no bindings
     possible_conditions = []
     for binding in bindings_list[0]:
-        first_precondition = instantiate(precondition[0], binding, precondition[0].value)
-        contained = get_predicate(first_precondition, predicates)
-        if not contained:
-            valid = (first_precondition.value == False)
+        if contains_variables(precondition[0]):
+                first_precondition = instantiate(precondition[0], binding, precondition[0].value)
         else:
-            valid = (contained.value == first_precondition.value)
-        if valid:
+                first_precondition = precondition[0]
+        contained = get_predicate(first_precondition, predicates)
+        # print("RECURSIVE:", contained, "Condition", first_precondition)
+        valid = True
+        if contained == False:
+            valid = not first_precondition.value
+        if valid and (not contains_variables(first_precondition)):
             new_precondition = []
             for condition in precondition[1:]:
                 new_precondition.append(instantiate(condition, binding, condition.value))
-            
+            # print("\nInstantiated Condition: ", effect_to_string(new_precondition))
             bound_precondition_list = match_conditions(new_precondition, bindings_list[1:], predicates)
-            
             if bound_precondition_list != False:
                 for bound_precondition in bound_precondition_list:
                     # print(bound_precondition)
                     bound_precondition.insert(0, first_precondition)
                     if bound_precondition not in possible_conditions:
                         possible_conditions.append(bound_precondition)
-    
     return possible_conditions
       
 def ask(condition, predicates):
@@ -152,7 +185,9 @@ def compute_effect(parameters, action, bindings = False):
         bindings = Bindings()
 
         precondition = action.precondition
-
+        # print(action.name)
+        # print("\nPARAMS", parameters)
+        # print("Precondition", action.precondition)
         for i in range(len(precondition)):
             for j in range(len(precondition[i].args)):
                 # print("PRECONDITION:", precondition[i])
@@ -166,7 +201,6 @@ def compute_effect(parameters, action, bindings = False):
         # print()
         # print("Bindings: ", bindings)
         # print()
-
 
         params = action.parameters
         input = [action.name]
@@ -278,7 +312,8 @@ def generate_new_states(state, effects):
             elif (not predicate.value) and (get_predicate(predicate, state)):
                 predicate.value = not predicate.value
                 # print(predicate)
-                new_state.remove(predicate)
+                if predicate in new_state:
+                    new_state.remove(predicate)
                 predicate.value = not predicate.value
         
         state_list.append((effect[0], new_state))
@@ -327,6 +362,7 @@ def contains_unbound_parameters(parameters):
     return unbound_parameters
 
 def contains_variables(condition):
+    # print("\nCondition", condition)
     for term in condition.args:
         if is_var(term):
             return True
