@@ -67,6 +67,10 @@ def breadth_first_search(initial_state, goal_state, domain, problem):
             visited_list.append(cur_state.state)
 
             expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+            # print("Pretty Print:")
+            # for element in expansion:
+            #     print(element[0])
+
             for state in expansion:
                 new_state = State_Node(state[1])
                 new_state.parent = cur_state
@@ -279,9 +283,11 @@ if __name__ == "__main__":
 
     # print("DOMAIN DICT:")
     # print(domain_dict)
+    # pretty_print_list(domain_dict["actions"])
     # print()
     # print("PROBLEM DICT")
     # print(problem_dict)
     # print()
+    # pretty_print_list(problem_dict["state"])
     
     # GraphGeneration.expand(problem_dict['objects'], problem_dict['state'], domain_dict)
