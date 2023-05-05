@@ -1,7 +1,5 @@
 from util import *
 from logical_classes import *
-import itertools
-
 
 def expand(objects, state, domain):
 
@@ -90,7 +88,7 @@ def get_possible_actions(predicates, actions):
 
     return action_dict
 
-def get_bindings(predicates, precondition, bindings_list=[]):
+def get_bindings(predicates, precondition):
     total_list = []
     for condition in precondition:
         bindings_list = ask(condition, predicates)
