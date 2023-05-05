@@ -61,7 +61,7 @@ def get_possible_actions(predicates, actions):
     action_dict = dict()
     
     for act in actions:
-        # print("\n", act.name)
+        print("\n", act.name)
         precondition = act.precondition
         filtered_predicates = filter_predicates(predicates, precondition)
         bindings_list = get_bindings(filtered_predicates, precondition)
@@ -76,28 +76,45 @@ def get_possible_actions(predicates, actions):
         #     print()
         action_dict[act.name] = matched
 
+    print("DONE GET POSSIBLE ACTIONS")
     return action_dict
 
-def get_bindings(predicates, precondition, bindings=Bindings()):
+def get_bindings(predicates, precondition):
     total_list = []
-    first_precondition = precondition[0]
-    has_unbound_parameters = contains_variables(first_precondition)
-    if (len(precondition) == 1) and (not has_unbound_parameters):
-        return [bindings]
-    elif (len(precondition) == 1):
-        possible = ask(first_precondition, predicates)
-        for binding in possible.list_of_bindings:
-            if binding not in bindings:
-                pass
-    elif not has_unbound_parameters:
-        return get_bindings(predicates, precondition[1:], bindings)
-    else:
-        pass
+    for condition in precondition:
+        bindings_list = ask(condition, predicates)
+        if bindings_list != False:
+            total_list.append(bindings_list)
+            # print()
+            # print(condition.name)
+            # print(bindings_list)
+            # print()
+
+    # print(total_list)
+    
+    return total_list
 
 def match_conditions(precondition, bindings_list, predicates):
-    # print("\nPRECONDITION:" , effect_to_string(precondition))
-    pass
-      
+    first_condition = precondition[0]
+    if len(bindings_list) == 1:
+        new_precondition = []
+        if not contains_variables(first_condition):
+            return [precondition]
+        else:
+            for binding in bindings_list[0]:
+                first_condition = instantiate(first_condition, binding, first_condition.value)
+                new_precondition.append([first_condition])
+            return new_precondition
+    else:
+        possible_conditions = []
+        for binding in bindings_list[0]:
+            if not contains_variables(precondition):
+                new_precondition = []
+                first_condition = instantiate(first_condition, binding, precondition.value)
+                
+            
+
+            
 def ask(condition, predicates):
     
     bindingsList = ListOfBindings()
