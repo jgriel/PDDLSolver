@@ -1,6 +1,6 @@
 import sys
 import queue
-import DomainParser, ProblemParser, GraphGeneration
+import DomainParser, ProblemParser, GraphGeneration2
 import time
 
 # Use a visited
@@ -66,7 +66,7 @@ def breadth_first_search(initial_state, goal_state, domain, problem):
             # add to visited list
             visited_list.append(cur_state.state)
 
-            expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+            expansion = GraphGeneration2.expand(problem["objects"], cur_state.state, domain)
             # print("Pretty Print:")
             # for element in expansion:
             #     print(element[0])
@@ -99,7 +99,7 @@ def depth_first_search(initial_state, goal_state, domain, problem):
             if goal_check(cur_state.state, goal_state):
                 return solve_path(cur_state)
             else:
-                expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+                expansion = GraphGeneration2.expand(problem["objects"], cur_state.state, domain)
                 for item in expansion:
                     state = State_Node(item[1])
                     state.parent = cur_state
@@ -132,7 +132,7 @@ def greedy_best_first_search(initial_state, goal_state, domain, problem):
 
             # print(cur_state)
 
-            expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+            expansion = GraphGeneration2.expand(problem["objects"], cur_state.state, domain)
             for item in expansion:
                 new_state = State_Node(item[1])
                 new_state.totalDistance = heuristic(item[1], goal_state)
@@ -153,7 +153,7 @@ takes in state of the node ... state_node.state
 def pretty_print_list(input_list):
     print("Pretty Print:")
     for element in input_list:
-        print(GraphGeneration.action_params_to_string(element))
+        print(GraphGeneration2.action_params_to_string(element))
    
 '''
 Find the state that will get you to goal in shortest path
@@ -181,7 +181,7 @@ def a_star_search(initial_state, goal_state, domain, problem):
         
             # 	keep exapnding
             else:
-                expansion = GraphGeneration.expand(problem["objects"], cur_state.state, domain)
+                expansion = GraphGeneration2.expand(problem["objects"], cur_state.state, domain)
                 for item in expansion:
                     h_n = heuristic(item[1], goal_state)
                     g_n = cur_state.aTobDistance + 1
@@ -295,4 +295,4 @@ if __name__ == "__main__":
     print()
 
     
-    # GraphGeneration.expand(problem_dict['objects'], problem_dict['state'], domain_dict)
+    # GraphGeneration2.expand(problem_dict['objects'], problem_dict['state'], domain_dict)
