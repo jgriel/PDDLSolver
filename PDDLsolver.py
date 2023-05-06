@@ -153,7 +153,7 @@ takes in state of the node ... state_node.state
 def pretty_print_list(input_list):
     print("Pretty Print:")
     for element in input_list:
-        print(GraphGeneration2.action_params_to_string(element))
+        print(element)
    
 '''
 Find the state that will get you to goal in shortest path

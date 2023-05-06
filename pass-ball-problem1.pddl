@@ -39,6 +39,9 @@
           (in-room jason room2)
           (in-room angelo room2)
           (in-room rosario room2)
+
+          (is-room room1)
+          (is-room room2)
           
           (has-ball allison))
    (:goal (has-ball rosario)))

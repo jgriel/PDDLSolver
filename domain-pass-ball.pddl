@@ -2,7 +2,8 @@
    (:predicates (has-first-letter ?n ?l)
 		(has-last-letter ?n ?l)
 		(in-room ?n ?r)
-		(has-ball ?n))
+		(has-ball ?n)
+        (is-room ?r))
 
    (:action pass
        :parameters  (?from ?to ?letter ?room)
@@ -12,6 +13,6 @@
 		     
     (:action move
         :parameters (?person ?from ?to)
-        :precondition (and (in-room ?person ?from) (not (in-room ?person ?to)))
+        :precondition (and (in-room ?person ?from) (is-room ?from) (is-room ?to))
         :effect (and (in-room ?person ?to) (not (in-room ?person ?from))))
     )
